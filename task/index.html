@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ItCareerSwitch Task Project</title>
+    <meta name="author" content="balintpipei">
+
+    <link href="./files/style.css" rel="stylesheet">
+</head>
+<body>
+    <header></header>
+    <main>
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>API Name</th>
+                        <th>API Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Earthquakes</td>
+                        <td>
+                            <p>Choose coordinates</p>
+                            <form>
+                                <input id='north' type="number" value="" name="north" placeholder="North" min="-100" max="100">
+                                <input id='south' type="number" value="" name="south" placeholder="South" min="-100" max="100">
+                                <input id='east' type="number" value="" name="east" placeholder="East" min="-100" max="100">
+                                <input id='west' type="number" value="" name="west" placeholder="West" min="-100" max="100">
+                            </form>
+
+                        </td>
+                        <td>
+                            <input id="earthquakeButton" type="submit" value="Submit">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>PostalCode</td>
+                        <td>
+                            <p>Choose a PostalCode</p>
+                            <form>
+                                <input id="postalcode" type="number" value="" name="postalcode" placeholder="PostalCode" min="0" max="10000">
+                            </form>
+                        </td>
+                        <td>
+                            <input id="postalCodeButton" type="submit" value="Submit">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>CountryCode</td>
+                        <td>
+                            Choose a CountryCode
+                            <form>
+                                <input id="countryCodeLat" type="number" value="" name="countryCodeLat" placeholder="Lat">
+                                <input id="countryCodeLng" type="number" value="" name="countryCodeLng" placeholder="Lng">
+                            </form>
+                        </td>
+                        <td>
+                            <input id="countryCodeButton" type="submit" value="Submit">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="results" colspan="3">
+                            <h1>Results</h1>
+                            <div id="resultbox">
+                                <p id="all"></p>
+                                <p id="first"></p>
+                                <p id="second"></p>
+                                <p id="third"></p>
+                                <p id="fourth"></p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer></footer>
+    <div id="preloader"></div>
+
+
+    <script src="./files/jquery-2.2.3.min.js"></script>
+    <script src="./files/script.js"></script>
+</body>
+</html>
