@@ -1,5 +1,4 @@
 /*preloader*/
-
 #preloader {
     position: fixed;
     top: 0;
@@ -49,6 +48,45 @@
 }
 
 /*end of preloader */
+
+
+/* api data loader */
+.lds-dual-ring.hidden {
+    display: none;
+}
+
+/*Spinner Styles*/
+.lds-dual-ring {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    background-color: rgb(92, 92, 92);
+    border-radius: 50%;
+    z-index: 9999;
+    opacity: 1;
+    transition: all 0.5;
+}
+.lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 5% auto;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* end dual ring message until data arrive*/
+
 *{
     margin: 0;
     box-sizing: border-box;

@@ -20,6 +20,12 @@ $('#earthquakeButton').click(function() {
             east: $('#east').val(),
             west: $('#west').val()
         },
+        //loading message until the result arrive from api call
+
+        beforeSend: function() {
+            $('#loader').removeClass('hidden')
+        },
+
         success: function(result) {
             console.log(result);
 
@@ -54,6 +60,9 @@ $('#earthquakeButton').click(function() {
                 }
             }
         },
+        complete: function() {
+            $('#loader').addClass('hidden')
+        },
         error: function(jqXHR, textStatus, errorThrown) {
             var errorMessage = jqXHR.status + ': ' + jqXHR.statusText
             alert('Error - ' + errorMessage);
@@ -70,6 +79,9 @@ $('#postalCodeButton').click(function() {
         dataType: 'json',
         data: {
             postalcode: $('#postalcode').val()
+        },
+        beforeSend: function() {
+            $('#loader').removeClass('hidden')
         },
         success: function(result) {
             console.log(result);
@@ -103,6 +115,9 @@ $('#postalCodeButton').click(function() {
                 }
             }
         },
+        complete: function() {
+            $('#loader').addClass('hidden')
+        },
         error: function(jqXHR, textStatus, errorThrown) {
             var errorMessage = jqXHR.status + ': ' + jqXHR.statusText
             alert('Error - ' + errorMessage);
@@ -122,6 +137,9 @@ $('#countryCodeButton').click(function() {
             lng: $('#countryCodeLng').val(),
             lat: $('#countryCodeLat').val(),
         },
+        beforeSend: function() {
+            $('#loader').removeClass('hidden')
+        },
         success: function(result) {
             console.log(result);
 
@@ -137,6 +155,9 @@ $('#countryCodeButton').click(function() {
                     $('#fourth').html('CountryName: ' + result.data.countryName)
                 }
             }
+        },
+        complete: function() {
+            $('#loader').addClass('hidden')
         },
         error: function(jqXHR, textStatus, errorThrown) {
             var errorMessage = jqXHR.status + ': ' + jqXHR.statusText
