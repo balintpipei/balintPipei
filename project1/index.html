@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gazetteer Balint Pipei</title>
+    <meta name="'author" content="'Balint Pipei">
+
+<!-- favicon-->
+    <link href="./libs/img/logo.png" rel="icon">
+<!-- main css -->
+    <link rel="stylesheet" href="./libs/css/style.css">
+
+<!-- leaflet libraries -->
+    <link rel="stylesheet" href="./libs/leaflet/leaflet.css" />
+    <script src="./libs/leaflet/leaflet.js"></script>
+
+<!--  leaflet markercluster library-->
+    <link rel="stylesheet" href="./libs/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="./libs/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css">
+    <script src="./libs/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js"></script>
+
+<!--Goofle Font-->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Satisfy" rel="stylesheet">
+
+
+<!-- easybutton -->
+    <script src="./libs/easybutton/easy-button.js"></script>
+
+<!-- bootstrap  -->
+    <link href="./libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./libs/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="./libs/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="./libs/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+<!-- icon libaray for easybutton -->
+    
+    <link rel='stylesheet' href="./libs/fontawesome/css/all.css">
+    <link rel='stylesheet' href="./libs/fontawesome/css/fontawesome.css">
+    <link rel='stylesheet' href="./libs/fontawesome/css/brands.css">
+    <link rel='stylesheet' href="./libs/fontawesome/css/solid.css">
+
+</head>
+
+<body>
+  <header id="header" class="fixed-top d-flex justify-content-between align-items-center header-transparent">
+    <div>
+        <img src="./libs/img/logo.png" alt="logo" class="logo" id="click">
+    </div>
+    <select id="items" class="form-select form-select-sm select" aria-label=".form-select-sm example">
+        <option value="0">Select Country</option>
+    </select>
+    <div id="buttonContainer">
+       <button id='searchButton' type="submit" class="button">Search</button> 
+    </div>
+    <nav id="navbar" class="navbar">
+      <ul>
+        <li><a class="nav-link scrollto" href="#homeSection">Home</a></li>
+        <li><a class="nav-link scrollto" href="#aboutSection">About</a></li>
+        <li><a class="nav-link scrollto" href="#mapSection">Map</a></li>
+        <li><a class="nav-link scrollto" href="#capitalSection">Capital</a></li>
+      </ul>
+      <i id='changeNav' class="bi bi-list mobile-nav-toggle"></i>
+    </nav><!-- .navbar -->
+  </header>
+      <!-- End Header -->
+
+        <!-- Home Section -->
+        <section id="homeSection">
+          <div class="home-container">
+            <h1>Gazetteer</h1>
+            <h2>Would you like to know more about countries, you are at the right place</h2>
+            <h2>Search for a country!</h2>
+            <a href="#aboutSection" class="btn-scroll scrollto" title="Scroll Down"><i class="bx bx-chevron-down"></i></a>
+          </div>
+        </section><!-- End home -->
+
+    <main id='main' class="d-flex flex-row flex-wrap">
+        <section id="aboutSection" class="section">
+            <div id="details" class="d-flex flex-column justify-content-around align-items-center">
+              <h1 id="countryName">CountryName</h1>
+              <div id="list">
+              <ul>
+                <li>Capital City:   <span id="capitalCity" class="result"></span>  </li>
+                <li>Continet Name:   <span id="continentName" class="result"></span>   </li>
+                <li>Population:  <span id="population" class="result"></span>   </li>
+                <li>Currency Code:     <span id="currency" class="result"></span></li>
+                <li>Languages:      <span id="languages" class="result"></span></li>
+                <li>Aresqkm:      <span id="aresqkm" class="result"></span></li>
+                <li>CountryCode:      <span id="countryCode" class="result"></span></li>
+              </ul>
+              </div>
+              <div id="rateResult">
+                  <h5>Please Rate this Country</h5>
+                  <form id="rating-form">
+                    <span class="rating-star">
+                    <input type="radio" name="rating" value="5"><span class="star"></span>
+                     
+                        <input type="radio" name="rating" value="4"><span class="star"></span>
+                     
+                        <input type="radio" name="rating" value="3"><span class="star"></span>
+                     
+                        <input type="radio" name="rating" value="2"><span class="star"></span>
+                     
+                        <input type="radio" name="rating" value="1"><span class="star"></span>
+                    </span>
+                    </form>
+                    <p>Thanks For Giving <span id="selected-rating" class="selected-rating" >0</span> Stars.</p>
+              </div>
+            </div>
+        </section>
+        <section id="mapSection" class="section">
+            <div id="map"></div>
+        </section>
+        <section id="capitalSection" class="d-flex flex-column justify-content-around align-items-center section">
+          <div id="capitalContainer" class="d-flex flex-column justify-content-around align-items-center">
+            <h1 id="capitalHeader"></h1>
+            <p id="capitalSummary" class="result"></p>
+            <a id="capitalWiki" href='#' target="_blank"><p>Wikipedia Link<p></a>
+          </div>
+          <div id="slideshow">
+              <img id="imageSlide" alt="" src="" />
+            </div>
+        </section>
+      </main>
+      <div id="preloader"></div>
+    
+    <script src="./libs/jquerry/jquery-2.2.3.min.js"></script>
+    <script src="./libs/js/main.js"></script>
+</body>
+</html>
