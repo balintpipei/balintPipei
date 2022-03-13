@@ -1,9 +1,5 @@
-var details = {
-    features: [],
-};
-var center;
 
-//layergroup handle
+var center;
 
 var map = L.map('map',{
     center: [0,0],
@@ -19,8 +15,6 @@ var baseLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}
     zoomOffset: -1,
     accessToken: 'pk.eyJ1IjoiYmFsaW50MTEyMCIsImEiOiJja3p3cDA3MnQ2eDRoMnVvMTVvYzE5amVyIn0.EqtGAs4TYbk6mB6l0DRP4A'
 }).addTo(map);
-
-
 
 
 $('#searchBtn').click(function() {
@@ -72,17 +66,13 @@ var fetchData = function(query, dataUrl) {
     return $.ajax({
         data: query,
         dataType: 'json',
-        url: dataUrl
+        url: dataUrl,
     });
 };
 var error = function(jqXHR, textStatus, errorThrown) {
     var errorMessage = jqXHR.status + ': ' + jqXHR.statusText
     alert('Error - ' + errorMessage);
 };
-
-
-
-
 
 
 //----------------------------------------------------------------
@@ -157,16 +147,12 @@ function updateAll(){
             }, './libs/php/weather.php'
         )
     });
-
-
 //webcam api call
     var webcam = fetchData(
         {
             countryCode: countryCode
         }, './libs/php/webcam.php'
         );
-
-
 //covid api call
     var covid = fetchData(
         {
@@ -225,8 +211,6 @@ var capitalMark = new L.Marker(capitalLocation, {icon: capitalIcon});
 capitalMark.bindPopup(`${data2[0]['data'][0]['title']}<br><details>${data2[0]['data'][0]['summary']}</details><br><a target="_blank" href="http://${data2[0]['data'][0]['wikipediaUrl']}">Wikipedia</a>`);
 map.addLayer(capitalMark);
 
-
-
 //earthquake layer
 var earthquakeIcon = L.icon({
     iconUrl: './libs/img/caution.png',
@@ -266,7 +250,6 @@ for(var i=0; i< data4[0]['data'].length; i++) {
 };
 map.addLayer(weather);
 
-
 //webcam clustergroups
 var webcamData = data6[0]['data']['result']['webcams'];
 var webcamIcon = L.icon({
@@ -282,7 +265,6 @@ for(var i=0; i< data4[0]['data'].length; i++) {
     webcam.addLayer(webcamMarkers[i]);
 };
 map.addLayer(webcam);
-
 
 //map controller
 var overlayMaps = {
@@ -306,20 +288,12 @@ controller.addTo(map);
 
 $(window).on('load',function() {
 
-
-
-
-
-
-
 //preloader
     if($('#preloader').length) {
-        $('#preloader').delay(1000).fadeOut('slow', function() {
-            $(this).remove();
+        $('#preloader').delay(3000).fadeOut('slow', function() {
+            $(this).addClass('hide');
         });
-    }
-
-
+    };
 
     var hooverStyle = {
         fillColor: 'lightGrey',
@@ -405,9 +379,6 @@ $( "#items" ).change(function() {
         }
       });
   });
-
-
-
 //end of onchange function
 //start current location
 map.locate({setView: true, maxZoom: 5});
@@ -450,33 +421,29 @@ map.on('locationerror', onLocationError);
 
 //end of current locatio
 //add all of the country layer
-var getFeatures = fetchData(
-        {}, './libs/php/countryBorders.php'
-    );
-getFeatures.done(function(data1){
+var getFeatures = fetchData({}, './libs/php/countryBorders.php');
+var geometry = fetchData({}, './libs/php/countryGeo.php');
 
-    details.features.push(data1['data'].features);
-    var countryCode = data1['data'].features;
+
+$.when(getFeatures, geometry).then(function(data1,data2){
+    var countryCode = data1[0]['data'];
 
     for(var i = 0; i < countryCode.length; i++) {
         var option = '';
-        var iso_a2 = countryCode[i].properties.iso_a2;
-        var name = countryCode[i].properties.name;
+        var iso_a2 = countryCode[i].code;
+        var name = countryCode[i].name;
         option += '<option value="'+ iso_a2 + '">' + name + '</option>';      
         $('#items').append(option);
 
     }
 
- geojson = L.geoJson(countryCode, {
+ geojson = L.geoJson(data2[0]['data'], {
     style: style,
     onEachFeature: onEachFeature
 }).addTo(map);  
 //endo of country layer
+
 }).fail(error);
     
-
-
-
-
 //end of onload function
 });
