@@ -1,6 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=BhuTuka+Expanded+One&display=swap');
+
+
 *{
     box-sizing: border-box;
 }
+
 
 /*preloader*/
 #preloader {
@@ -11,7 +15,7 @@
     right:50%;
     z-index: 9999;
     overflow: hidden;
-    background: #fff;
+    background: white;
   }
   
   #preloader:before{
@@ -19,7 +23,7 @@
     position: fixed;
     top: calc(50%-30px);
     left: calc(50%-30px);
-    border: 6px solid #f2f2f2;
+    border: 6px solid black;
     border-top: 6px solid #56829e;
     border-radius: 50%;
     width: 60px;
@@ -52,6 +56,10 @@
   }
   
   /*end of preloader */
+.hide{
+    display: none;
+}
+
 
   #map{
       position: relative;
@@ -69,39 +77,16 @@
   .infoBtn:hover{
       background-color: rgb(202, 202, 202);
   }
-  .bi-list, .bi-eyedropper, .bi-x, .bi-cursor-fill{
+  .bi-list, .bi-eyedropper, .bi-sun-fill, .bi-x, .bi-cursor-fill{
       font-size: 20px;
   }
-.details{
-    margin: 0;
-    padding: 10px;
-    position: absolute;
-    left: 4.5em;
-    top: 13vh;
-    width: 200px;
-    height: 300px;
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgb(82, 82, 82);
-    overflow: scroll;
-    z-index: 9999;
-    background: rgba(255, 255, 255, 0.7);
-}
-.details h6{
-    text-align: center;
-    margin: 20px 0 30px 0;
-}
-#list{
-    line-height: 10px;
-    padding: 15px;
-}
+
 p{
     font-weight: bold;
 }
+
 .result{
     font-weight: normal;
-}
-.hide {
-    display: none;
 }
 .searchBox{
     position: absolute;
@@ -109,20 +94,28 @@ p{
     left: 50px;
     z-index: 9999;
 }
-.covid{
-    position: absolute;
-    top: 19vh;
-    left: 4.5em;
-    height: 400px;
-    width: 500px;
-    z-index: 9999;
-}
-@media (max-width: 991px) {
-   .covid{
-       width: 280px;
-       height: 340px;
-       top: 30vh;
-       left: 5%;
-
-   }
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td {
+    text-align: center;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+  .icon{
+      width: 20px;
+      height: 20px;
+  }
+  .container{
+      width: 100%;
+      height: 100%;
+  }
+  .modal-title{
+    font-family: 'BhuTuka Expanded One', cursive;
   }
