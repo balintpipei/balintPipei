@@ -1,4 +1,17 @@
+/*
+$(window).on('load',function() {
 
+    //preloader
+        if($('#preloader').length) {
+            $('#preloader').delay(3000).fadeOut('slow', function() {
+                $(this).addClass('hide');
+            });
+        };
+
+    
+
+});
+*/
 var center;
 
 var map = L.map('map',{
@@ -17,11 +30,6 @@ var baseLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}
 }).addTo(map);
 
 
-$('#searchBtn').click(function() {
-    $('#items').toggleClass('hide');
-})
-
-
 //button for details box
 var customControl =  L.Control.extend({        
     options: {
@@ -30,12 +38,8 @@ var customControl =  L.Control.extend({
     onAdd: function (map) {
       var containerDet = L.DomUtil.create('div', 'bi bi-list infoBtn leaflet-control leaflet-bar');
       containerDet.onclick = function(){
-        //$('#chartContainer').addClass('hide');
-        $('#details').toggleClass('hide');
-        $(this).toggleClass('bi-list');
-        $(this).toggleClass('bi-x');
+        $('#countryInfo').modal('show'); 
       }
-
       return containerDet;
     }
   });
@@ -49,10 +53,7 @@ var covidBtn =  L.Control.extend({
     onAdd: function (map) {
       var container = L.DomUtil.create('div', 'bi bi-eyedropper infoBtn leaflet-control leaflet-bar');
       container.onclick = function(){
-        $('#chartContainer').toggleClass('hide');
-        //$('#details').addClass('hide');
-        $(this).toggleClass('bi-eyedropper');
-        $(this).toggleClass('bi-x');
+        $('#covid').modal('show'); 
       }
 
       return container;
@@ -61,6 +62,23 @@ var covidBtn =  L.Control.extend({
   map.addControl(new covidBtn());
 
 //end of covid stat button
+//weather button
+var weather =  L.Control.extend({        
+    options: {
+      position: 'topleft'
+    },
+    onAdd: function (map) {
+      var container = L.DomUtil.create('div', 'bi bi-sun-fill infoBtn leaflet-control leaflet-bar');
+      container.onclick = function(){
+        $('#weatherModal').modal('show'); 
+      }
+
+      return container;
+    }
+  });
+  map.addControl(new weather());
+
+//endo of weather button
 
 var fetchData = function(query, dataUrl) {
     return $.ajax({
@@ -105,7 +123,7 @@ function updateAll(){
         {
             map.removeLayer(layer)
         }
-    })
+    });
     
 
 //call apis
@@ -125,6 +143,16 @@ function updateAll(){
             }, './libs/php/wikipedia.php'
         )
     });
+
+//weatherModal api capitalLocation
+    var weatherModal = capitalFetch.then(function(data){
+        return fetchData({
+            lat: data['data'][1].lat,
+            lon: data['data'][1].lng
+        }, './libs/php/weatherModal.php')
+    })
+
+
 //earthquake api call
     var earthQuake = geoInfo.then(function(data){
         return fetchData(
@@ -163,40 +191,45 @@ function updateAll(){
         );
 
 //if all of the api call success use the data
-$.when(geoInfo, capitalFetch, earthQuake, weather, webcam, covid).then(function (data1, data2, data3, data4, data6, data7) {
-
+$.when(geoInfo, capitalFetch, earthQuake, weather, webcam, covid, weatherModal).then(function (data1, data2, data3, data4,data5, data6, data7) {
 //geoinfo info
-$('#countryName').html(data1[0]['data'][0]['countryName']);
-$('#capitalCity').html(data1[0]['data'][0]['capital']);
-$('#continentName').html(data1[0]['data'][0]['continentName']);
-$('#languages').html(data1[0]['data'][0]['languages']);
-$('#aresqkm').html(data1[0]['data'][0]['areaInSqKm']);
-$('#currency').html(data1[0]['data'][0]['currencyCode']);
-$('#population').html(data1[0]['data'][0]['population']);
-$('#countryCode').html(data1[0]['data'][0]['countryCode']);
+let geoData = data1[0]['data'][0];
+
+$('#countryName').html(geoData['countryName']);
+$('#capitalCity').html(geoData['capital']);
+$('#continentName').html(geoData['continentName']);
+$('#languages').html(geoData['languages']);
+$('#aresqkm').html(geoData['areaInSqKm']);
+$('#currency').html(geoData['currencyCode']);
+$('#population').html(geoData['population']);
+$('#countryCode').html(geoData['countryCode']);
 
 //covid stat
-let covidData = data7[0]['data'].dates[date].countries[countryName];
+let covidData;
+if(data6[0]['data']) {
+    covidData = data6[0]['data'].dates[date].countries[countryName];
+}
 
-var chart = new CanvasJS.Chart("chartContainer",
-    {
-        title: {
-            text: covidData.name + ": Today Covid Stat at " + covidData.date             
-        },
-        data: [              
-        {
-            // Change type to "doughnut", "line", "splineArea", etc.
-            type: "column",
-            dataPoints: [
-                { label: "Confirmed",  y: covidData.today_confirmed  },
-                { label: "Deaths", y: covidData.today_deaths  },
-                { label: "Recovered", y: covidData.today_recovered  },
-                { label: "Open Cases",  y: covidData.today_open_cases  }
-            ]
-        }
-        ]
-    });
-    chart.render();
+
+if(covidData) {
+$('#covidHead').html(geoData['countryName'])
+$('#newConf').html(covidData.today_new_confirmed);
+$('#newRec').html(covidData.today_new_recovered);
+$('#newDeath').html(covidData.today_new_deaths);
+$('#totalConf').html(covidData.today_confirmed);
+$('#totalRec').html(covidData.today_recovered);
+$('#totalDeath').html(covidData.today_deaths);
+} else {
+    $('#covidHead').html('There is no')
+    $('#newConf').html('');
+    $('#newRec').html('');
+    $('#newDeath').html('');
+    $('#totalConf').html('');
+    $('#totalRec').html('');
+    $('#totalDeath').html(''); 
+}
+
+
 //end of covid stat
 
 //capital mark
@@ -204,11 +237,11 @@ var capitalIcon = L.icon({
     iconUrl: './libs/img/capital.png',
     shadowUrl: './libs/img/shadow.png',
 });
-var lonCapital = data2[0]['data'][0]['lng'];
-var latCapital = data2[0]['data'][0]['lat'];
+var lonCapital = data2[0]['data'][1]['lng'];
+var latCapital = data2[0]['data'][1]['lat'];
 var capitalLocation = new L.LatLng(latCapital, lonCapital);
 var capitalMark = new L.Marker(capitalLocation, {icon: capitalIcon});
-capitalMark.bindPopup(`${data2[0]['data'][0]['title']}<br><details>${data2[0]['data'][0]['summary']}</details><br><a target="_blank" href="http://${data2[0]['data'][0]['wikipediaUrl']}">Wikipedia</a>`);
+capitalMark.bindPopup(`${data2[0]['data'][1]['title']}<br><details>${data2[0]['data'][1]['summary']}</details><br><a target="_blank" href="http://${data2[0]['data'][1]['wikipediaUrl']}">Wikipedia</a>`);
 map.addLayer(capitalMark);
 
 //earthquake layer
@@ -249,22 +282,161 @@ for(var i=0; i< data4[0]['data'].length; i++) {
     weather.addLayer(weatherMarkers[i]);
 };
 map.addLayer(weather);
+//weatherModel api handle
+
+// Weather main data
+let data = data7[0]['data'];
+let main = data.current.weather[0].main;
+let description = data.current.weather[0].description;
+let temp = Math.round(data.current.temp);
+let pressure = data.current.pressure;
+let humidity = data.current.humidity;
+let name = data1[0]['data'][0].capital;
+
+$('#wrapper-description').html(description);
+$('#wrapper-temp').html(temp + "°C");
+$('#wrapper-pressure').html(pressure);
+$('#wrapper-humidity').html(humidity + "°C");
+$('#wrapper-name').html(name);
+
+
+// Weather hourly data
+let hourNow = data.hourly[0].temp;
+let hour1 = data.hourly[1].temp;
+let hour2 = data.hourly[2].temp;
+let hour3 = data.hourly[3].temp;
+let hour4 = data.hourly[4].temp;
+let hour5 = data.hourly[5].temp;
+
+
+$('#wrapper-hour-now').html(hourNow + "°");
+$('#wrapper-hour1').html(hour1 + "°");
+$('#wrapper-hour2').html(hour2 + "°");
+$('#wrapper-hour3').html(hour3 + "°");
+$('#wrapper-hour4').html(hour4 + "°");
+$('#wrapper-hour5').html(hour5 + "°");
+
+// Time
+let timeNow = new Date().getHours();
+let time1 = timeNow + 1;
+let time2 = time1 + 1;
+let time3 = time2 + 1;
+let time4 = time3 + 1;
+let time5 = time4 + 1;
+
+$('#wrapper-time1').html(time1);
+$('#wrapper-time2').html(time2);
+$('#wrapper-time3').html(time3);
+$('#wrapper-time4').html(time4);
+$('#wrapper-time5').html(time5);
+
+// Weather daily data
+let tomorrowTemp = Math.round(data.daily[0].temp.day);
+let dATTemp = Math.round(data.daily[1].temp.day);
+let tomorrowMain = data.daily[0].weather[0].main;
+let dATTempMain = data.daily[1].weather[0].main;
+  
+$('#wrapper-forecast-temp-today').html(temp + "°");
+$('#wrapper-forecast-temp-tomorrow').html(tomorrowTemp + "°");
+$('#wrapper-forecast-temp-dAT').html(dATTemp + "°");
+  
+
+// Icons
+let iconBaseUrl = "http://openweathermap.org/img/w/";
+let iconFormat = ".png";
+
+// Today
+let iconCodeToday = data.current.weather[0].icon;
+let iconFullyUrlToday = iconBaseUrl + iconCodeToday + iconFormat;
+$("#wrapper-icon-today").attr("src", iconFullyUrlToday);
+
+// Tomorrow
+let iconCodeTomorrow = data.daily[0].weather[0].icon;
+let iconFullyUrlTomorrow = iconBaseUrl + iconCodeTomorrow + iconFormat;
+$("#wrapper-icon-tomorrow").attr("src", iconFullyUrlTomorrow);
+
+// Day after tomorrow
+let iconCodeDAT = data.daily[1].weather[0].icon;
+let iconFullyUrlDAT = iconBaseUrl + iconCodeDAT + iconFormat;
+$("#wrapper-icon-dAT").attr("src", iconFullyUrlDAT);
+
+// Icons hourly
+
+// Hour now
+let iconHourNow = data.hourly[0].weather[0].icon;
+let iconFullyUrlHourNow = iconBaseUrl + iconHourNow + iconFormat;
+$("#wrapper-icon-hour-now").attr("src", iconFullyUrlHourNow);
+
+// Hour1
+let iconHour1 = data.hourly[1].weather[0].icon;
+let iconFullyUrlHour1 = iconBaseUrl + iconHour1 + iconFormat;
+$("#wrapper-icon-hour1").attr("src", iconFullyUrlHour1);
+
+// Hour2
+let iconHour2 = data.hourly[2].weather[0].icon;
+let iconFullyUrlHour2 = iconBaseUrl + iconHour2 + iconFormat;
+$("#wrapper-icon-hour2").attr("src", iconFullyUrlHour2);
+
+// Hour3
+let iconHour3 = data.hourly[3].weather[0].icon;
+let iconFullyUrlHour3 = iconBaseUrl + iconHour3 + iconFormat;
+$("#wrapper-icon-hour3").attr("src", iconFullyUrlHour3);
+
+// Hour4
+let iconHour4 = data.hourly[4].weather[0].icon;
+let iconFullyUrlHour4 = iconBaseUrl + iconHour4 + iconFormat;
+$("#wrapper-icon-hour4").attr("src", iconFullyUrlHour4);
+
+// Hour5
+let iconHour5 = data.hourly[5].weather[0].icon;
+let iconFullyUrlHour5 = iconBaseUrl + iconHour5 + iconFormat;
+$("#wrapper-icon-hour5").attr("src", iconFullyUrlHour5);
+
+// Backgrounds
+$('#wrapper-bg').css('background-size', 'cover');
+$('#wrapper-bg').css('background-position', 'center');
+$('#wrapper-bg').css('background-repeat', 'no-repeat');
+switch (main) {
+  case "Snow":
+    $('#wrapper-bg').css('background-image', 'url(./libs/img/snow.gif)');
+    break;
+  case "Clouds":
+  $('#wrapper-bg').css('background-image', 'url(./libs/img/clouds.gif)');
+    break;
+  case "Fog":
+    $('#wrapper-bg').css('background-image', 'url(./libs/img/fog.gif)');
+    break;
+  case "Rain":
+    $('#wrapper-bg').css('background-image', 'url(./libs/img/rain.gif)');
+    break;
+  case "Clear":
+    $('#wrapper-bg').css('background-image', 'url(./libs/img/clear.gif)');
+    break;
+  case "Thunderstorm":
+    $('#wrapper-bg').css('background-image', 'url(./libs/img/thunderstorm.gif)');
+    break;
+  default:
+    $('#wrapper-bg').css('background-image', 'url(./libs/img/clear.gif)');
+    break;
+}
 
 //webcam clustergroups
-var webcamData = data6[0]['data']['result']['webcams'];
+var webcamData = data5[0]['data']['result']['webcams'];
 var webcamIcon = L.icon({
     iconUrl: './libs/img/cam.png',
     shadowUrl: './libs/img/shadow.png',
 });
 var webcam = L.markerClusterGroup();
 var webcamMarkers = [];
-for(var i=0; i<data4[0]['data'].length; i++) {
+for(var i=0; i<webcamData.length; i++) {
     webcamMarkers.push(L.marker([webcamData[i].location.latitude, webcamData[i].location.longitude], {icon: webcamIcon}).bindPopup(`Picture about ${webcamData[i].title}<img src="${webcamData[i].image.current.thumbnail}"/>`));
 }
-for(var i=0; i< data4[0]['data'].length; i++) {
+for(var i=0; i< webcamData.length; i++) {
     webcam.addLayer(webcamMarkers[i]);
 };
 map.addLayer(webcam);
+
+
 
 //map controller
 var overlayMaps = {
@@ -276,6 +448,9 @@ var overlayMaps = {
 
 var controller = L.control.layers(null, overlayMaps);
 controller.addTo(map);
+
+
+$('#preloader').addClass('hide');
 //end of .when() method    
 }).fail(error);
 
@@ -288,13 +463,6 @@ controller.addTo(map);
 
 $(window).on('load',function() {
 
-//preloader
-    if($('#preloader').length) {
-        $('#preloader').delay(3000).fadeOut('slow', function() {
-            $(this).addClass('hide');
-        });
-    };
-
     var hooverStyle = {
         fillColor: 'lightGrey',
         weight: 3,
@@ -302,7 +470,6 @@ $(window).on('load',function() {
         dashArray: '',
         fillOpacity: 0.7
     }
-
 
 function style(feature) {
     return {
@@ -316,17 +483,39 @@ function style(feature) {
 };
 
 var geojson;
-function highlightFeature(e) {
+//add all of the country layer and fill up options
+var getFeatures = fetchData({}, './libs/php/countryBorders.php');
+var geometry = fetchData({}, './libs/php/countryGeo.php');
+
+
+$.when(getFeatures, geometry).then(function(data1,data2){
+    var countryCode = data1[0]['data'];
+    for(var i = 0; i < countryCode.length; i++) {
+        var option = '';
+        var iso_a2 = countryCode[i].code;
+        var name = countryCode[i].name;
+        option += '<option value="'+ iso_a2 + '">' + name + '</option>';      
+        $('#items').append(option);
+
+    }
+
+ geojson = L.geoJson(data2[0]['data'], {
+    style: style,
+    onEachFeature: onEachFeature
+}).addTo(map);  
+//endo of country layer
+}).fail(error);
+
+function updateCountryClick(e) {
+    $('#preloader').removeClass('hide');
+    geojson.resetStyle();
     var layer = e.target;
     layer.setStyle(hooverStyle);
-    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-        layer.bringToFront();
-    }
-}
-function resetHighlight(e) {
-    geojson.resetStyle(e.target);
-};
-function updateCountryClick(e) {
+    center = layer.getBounds().getCenter();
+    $('#items').val(layer.feature.properties.iso_a2)
+    map.fitBounds(layer.getBounds());
+    updateAll();
+
 //find nearby api call
     var findNearby = fetchData(
             {
@@ -351,99 +540,58 @@ function updateCountryClick(e) {
     });
 
 
-
-    var layer = e.target;
-    center = layer.getBounds().getCenter();
-    $('#items').val(layer.feature.properties.iso_a2)
-    map.fitBounds(layer.getBounds());
-    updateAll();
-};
+}
 
 function onEachFeature(feature, layer) {
     layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
+        //mouseover: highlightFeature,
+        //mouseout: resetHighlight,
         click: updateCountryClick
     });
-}
-
+};
 //onchange function
 $( "#items" ).change(function() {
+    $('#preloader').removeClass('hide');
+    geojson.resetStyle();
     var changeVal = $('#items').val();
     geojson.eachLayer(function (layer) {
         var id = layer.feature.properties.iso_a2;
         if(id === changeVal) {
             layer.setStyle(hooverStyle);
             map.fitBounds(layer.getBounds());
-            updateAll();
+            
         }
       });
+      updateAll();
   });
 //end of onchange function
+
 //start current location
-map.locate({setView: true, maxZoom: 5});
-
-function onLocationFound(e) {
-//position buttons
-        var position =  L.Control.extend({        
-            options: {
-            position: 'topleft'
-            },
-            onAdd: function (map) {
-            var container = L.DomUtil.create('div', 'bi bi-cursor-fill infoBtn leaflet-control leaflet-bar');
-            container.onclick = function(){
-                var location = L.marker(e.latlng).bindPopup("You are here");
-                map.addLayer(location);
-            }
-
-            return container;
-            }
-        });
-        map.addControl(new position());
-
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+        var latData = position.coords.latitude;
+        var lngData = position.coords.longitude;
+        //countrycode api call
         var currentLatLng = fetchData(
-            {lat : e.latlng.lat, lng : e.latlng.lng,}, './libs/php/countryCode.php'
+            {lat : latData, lng : lngData,}, './libs/php/countryCode.php'
         );
         currentLatLng.done(function(data) {
                     $('#items').val(data['data'].countryCode);
-                    $('#items').find('option:selected').text(data['data'].countryName);
+
+                    geojson.eachLayer(function (layer) {
+                        var id = layer.feature.properties.iso_a2;
+                        if(id === data['data'].countryCode) {
+                            layer.setStyle(hooverStyle);
+                            map.fitBounds(layer.getBounds());
+                        }
+                      });
                     //call the functional functions with the rest of the api call
                     updateAll();
-        })
-};
-map.on('locationfound', onLocationFound);
-function onLocationError(e) {
-    alert(e.message);
+        });   
+    });
+} else {
+    alert('Please, enable the location');
 }
-
-map.on('locationerror', onLocationError);
-
-
-//end of current locatio
-//add all of the country layer
-var getFeatures = fetchData({}, './libs/php/countryBorders.php');
-var geometry = fetchData({}, './libs/php/countryGeo.php');
-
-
-$.when(getFeatures, geometry).then(function(data1,data2){
-    var countryCode = data1[0]['data'];
-
-    for(var i = 0; i < countryCode.length; i++) {
-        var option = '';
-        var iso_a2 = countryCode[i].code;
-        var name = countryCode[i].name;
-        option += '<option value="'+ iso_a2 + '">' + name + '</option>';      
-        $('#items').append(option);
-
-    }
-
- geojson = L.geoJson(data2[0]['data'], {
-    style: style,
-    onEachFeature: onEachFeature
-}).addTo(map);  
-//endo of country layer
-
-}).fail(error);
-    
+//end of current locatio   
 //end of onload function
 });
