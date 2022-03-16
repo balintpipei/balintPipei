@@ -26,7 +26,7 @@
 
 
 <!-- bootstrap library-->
-<link href="./libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="./libs/bootstrap-4.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="./libs/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 <link href="./libs/boxicons/css/boxicons.min.css" rel="stylesheet">
 
@@ -40,26 +40,195 @@
 
 </head>
 <body>
+<!--WEATHER Modal -->
+<div class="modal fade" id="weatherModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal-dialog" role="document">
+  <div class="modal-content text-white shadow-4-strong" id="wrapper-bg">
+    <div class="modal-header">
+
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+                     <!-- Main current data -->
+                     <div class="card-header p-2 border-0">
+                        <div class="text-center mb-3">
+                          <p class="h2 mb-1" id="wrapper-name"></p>
+                          <p class="mb-1" id="wrapper-description"></p>
+                          <p class="display-1 mb-1" id="wrapper-temp"></p>
+                          <span class="">Pressure: <span id="wrapper-pressure"></span></span>
+                          <span class="mx-2">|</span>
+                          <span class="">Humidity: <span id="wrapper-humidity"></span></span>
+                        </div>
+                    </div>
+            <!-- Hourly forecast -->
+            <div class="card-body p-2 border-top border-bottom mb-2">
+                <div class="row text-center">
+                  <div class="col-2">
+                    <strong class="d-block mb-2">Now</strong>
+                    <img id="wrapper-icon-hour-now" src="" class="" alt="" />
+                    <strong class="d-block" id="wrapper-hour-now"></strong>
+                  </div>
+    
+                  <div class="col-2">
+                    <strong class="d-block mb-2" id="wrapper-time1"></strong>
+                    <img id="wrapper-icon-hour1" src="" class="" alt="" />
+                    <strong class="d-block" id="wrapper-hour1"></strong>
+                  </div>
+    
+                  <div class="col-2">
+                    <strong class="d-block mb-2" id="wrapper-time2"></strong>
+                    <img id="wrapper-icon-hour2" src="" class="" alt="" />
+                    <strong class="d-block" id="wrapper-hour2"></strong>
+                  </div>
+    
+                  <div class="col-2">
+                    <strong class="d-block mb-2" id="wrapper-time3"></strong>
+                    <img id="wrapper-icon-hour3" src="" class="" alt="" />
+                    <strong class="d-block" id="wrapper-hour3"></strong>
+                  </div>
+    
+                  <div class="col-2">
+                    <strong class="d-block mb-2" id="wrapper-time4"></strong>
+                    <img id="wrapper-icon-hour4" src="" class="" alt="" />
+                    <strong class="d-block" id="wrapper-hour4"></strong>
+                  </div>
+    
+                  <div class="col-2">
+                    <strong class="d-block mb-2" id="wrapper-time5"></strong>
+                    <img id="wrapper-icon-hour5" src="" class="" alt="" />
+                    <strong class="d-block" id="wrapper-hour5"></strong>
+                  </div>
+                </div>
+              </div>
+            <!-- Daily forecast -->
+            <div class="card-body px-5">
+                <div class="row align-items-center">
+                  <div class="col-lg-6">
+                    <strong>Today</strong>
+                  </div>
+    
+                  <div class="col-lg-2 text-center">
+                    <img id="wrapper-icon-today" src="" class="" alt="" />
+                  </div>
+    
+                  <div class="col-lg-4 text-end">
+                    <span id="wrapper-forecast-temp-today"></span>
+                  </div>
+                </div>
+    
+                <div class="row align-items-center">
+                  <div class="col-lg-6">
+                    <strong>Tomorrow</strong>
+                  </div>
+    
+                  <div class="col-lg-2 text-center">
+                    <img id="wrapper-icon-tomorrow" src="" class="" alt="" />
+                  </div>
+    
+                  <div class="col-lg-4 text-end">
+                    <span id="wrapper-forecast-temp-tomorrow">28</span>
+                  </div>
+                </div>
+    
+                <div class="row align-items-center">
+                  <div class="col-lg-6">
+                    <strong>Day after tomorrow</strong>
+                  </div>
+    
+                  <div class="col-lg-2 text-center">
+                    <img id="wrapper-icon-dAT" src="" class="" alt="" />
+                  </div>
+    
+                  <div class="col-lg-4 text-end">
+                    <span id="wrapper-forecast-temp-dAT">28</span>
+                  </div>
+                </div>
+              </div>
+
+    </div>
+  </div>
+</div>
+</div>
+  
+  <!--COVID Modal -->
+  <div class="modal fade" id="covid" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id=""><span id='covidHead'></span> Covid Statistics</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <table>
+                <tr>
+                  <td><img src="./libs/img/virus-covid-solid.svg" class="icon" ></td>
+                  <td>New Confirmed</td>
+                  <td id="newConf"></td>
+                </tr>
+                <tr>
+                  <td><img src="./libs/img/heart-pulse-solid.svg" class="icon" ></td>
+                  <td>New Recovered</td>
+                  <td id="newRec"></td>
+                </tr>
+                <tr>
+                  <td><img src="./libs/img/heart-crack-solid.svg" class="icon" ></td>
+                  <td>New Deaths</td>
+                  <td id="newDeath"></td>
+                </tr>
+                <tr>
+                    <td><img src="./libs/img/virus-covid-solid.svg" class="icon" ></td>
+                  <td>Total Confirmed</td>
+                  <td id="totalConf"></td>
+                </tr>
+                <tr>
+                  <td><img src="./libs/img/heart-pulse-solid.svg" class="icon" ></td>
+                  <td>Total Recovered</td>
+                  <td id="totalRec"></td>
+                </tr>
+                <tr>
+                    <td><img src="./libs/img/heart-crack-solid.svg" class="icon" ></td>
+                    <td>Total Deaths</td>
+                    <td id="totalDeath"></td>
+                </tr>
+
+
+              </table>
+        </div>
+      </div>
+    </div>
+  </div> 
+<!-- COUNTRY INFO Modal -->
+  <div class="modal fade" id="countryInfo" tabindex="-1" role="dialog" aria-labelledby="countryInfo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="countryName">Country Name</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <p>Capital:  <span id="capitalCity" class="result"></span></p>
+            <p>Continet:  <span id="continentName" class="result"></span></p>    
+            <p>Population: <span id="population" class="result"></span></p>    
+            <p>Currency:    <span id="currency" class="result"></span></p> 
+            <p>Languages:     <span id="languages" class="result"></span></p> 
+            <p>Area:      <span id="aresqkm" class="result"></span> km<sup>2</sup></p>
+            <p>CountryCode:     <span id="countryCode" class="result"></span></p> 
+        </div>
+      </div>
+    </div>
+  </div>
+
     <div id="map">
         <div class="searchBox d-flex flex-row">
-            <select id="items" class="itemsClass hide" aria-label=".form-select-sm example">
+            <select id="items" class="browser-default custom-select itemsClass" aria-label=".form-select-sm example">
                 <option value="0">Select Country</option>
             </select>
-            <span id="searchBtn" class="input-group-text border-0" id="search-addon">
-            <i class="fas fa-search"></i>
-            </span>
-        </div>
-        <div id="details" class="details hide">
-            <h6 id="countryName">CountryName</h6>
-            <div id="list" class="d-flex flex-column justify-content-around">
-              <p>Capital:   <span id="capitalCity" class="result"></span>  </p>
-              <p>Continet:   <span id="continentName" class="result"></span>   </p>
-              <p>Population:  <span id="population" class="result"></span>   </p>
-              <p>Currency:     <span id="currency" class="result"></span></p>
-              <p>Languages:      <span id="languages" class="result"></span></p>
-              <p>Area:      <span id="aresqkm" class="result"></span> km<sup>2</sup></p>
-              <p>CountryCode:      <span id="countryCode" class="result"></span></p>
-            </div>
         </div>
         <div id="chartContainer" class='covid hide'></div>
     </div>
@@ -69,6 +238,7 @@
 
     <script src="./libs/js/jquery-2.2.3.min.js"></script>
     <script src="./libs/js/canvasjs.min.js"></script>
+    <script src="./libs/bootstrap-4.0.0/dist/js/bootstrap.min.js"></script>
     <script src="./libs/js/main.js"></script>
 </body>
 </html>
