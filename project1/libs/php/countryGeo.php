@@ -15,7 +15,7 @@
     // Use a for each loop to go through each feature of the geoJson data and get the country name and ISO 3 code
     foreach ($countryData['features'] as $feature) {
 
-         array_push($border, $feature); 
+     array_push($border, $feature);
     };
     // Assign the output variable properties to relevant data
      $output['status']['code'] = "200";
