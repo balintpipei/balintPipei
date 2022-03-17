@@ -7,15 +7,21 @@
 
     $executionStartTime = microtime(true);
 
+    $country = $_REQUEST['iso'];
+
     $countryData = json_decode(file_get_contents("../json/countryBorders.geo.json"), true);
 
     // Create an empty array to add data to
-    $border = [];
+    $border = null;
 
     // Use a for each loop to go through each feature of the geoJson data and get the country name and ISO 3 code
     foreach ($countryData['features'] as $feature) {
 
-     array_push($border, $feature);
+        if ($feature["properties"]["iso_a2"] ==  $country) {
+            $border = $feature;
+            break;
+        }
+
     };
     // Assign the output variable properties to relevant data
      $output['status']['code'] = "200";
