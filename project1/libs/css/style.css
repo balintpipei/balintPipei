@@ -1,18 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=BhuTuka+Expanded+One&display=swap');
-
 
 *{
     box-sizing: border-box;
 }
-
+body{
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
 
 /*preloader*/
 #preloader {
     position: fixed;
     top: 50%;
     left: 50%;
-    bottom: 50%;
-    right:50%;
+    transform: translateX(-50%), translateY(-50%);
     z-index: 9999;
     overflow: hidden;
     background: white;
@@ -64,7 +66,7 @@
   #map{
       position: relative;
       width: 100%;
-      height: 100vh;
+      height: 100%;
       margin: 0;
       padding:0;
   }
@@ -91,8 +93,9 @@ p{
 .searchBox{
     position: absolute;
     top: 1.7vh;
-    left: 50px;
+    left: 50%;
     z-index: 9999;
+    transform: translateX(-50%);
 }
   table {
     font-family: arial, sans-serif;
@@ -116,6 +119,13 @@ p{
       width: 100%;
       height: 100%;
   }
-  .modal-title{
-    font-family: 'BhuTuka Expanded One', cursive;
+  #countryWiki{
+    color: black;
+  }
+  .flagbox{
+    padding: 0 20px;
+  }
+  .flagClass{
+    width: 35px;
+    height: 35px;
   }
