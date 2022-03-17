@@ -1,19 +1,6 @@
-/*
-$(window).on('load',function() {
 
-    //preloader
-        if($('#preloader').length) {
-            $('#preloader').delay(3000).fadeOut('slow', function() {
-                $(this).addClass('hide');
-            });
-        };
-
-    
-
-});
-*/
 var center;
-
+var geojson;
 var map = L.map('map',{
     center: [0,0],
     zoom: 2,
@@ -93,12 +80,15 @@ var error = function(jqXHR, textStatus, errorThrown) {
 };
 
 
+
 //----------------------------------------------------------------
 //ULTIMATE FUNCTIONS
 //----------------------------------------------------------------
 
 
 function updateAll(){
+
+
 
     var today = new Date();
     var dd = today.getDate();
@@ -189,11 +179,16 @@ function updateAll(){
 
         }, './libs/php/covid.php'
         );
-
+    var country = fetchData({iso: countryCode}, './libs/php/country.php');
+ 
 //if all of the api call success use the data
-$.when(geoInfo, capitalFetch, earthQuake, weather, webcam, covid, weatherModal).then(function (data1, data2, data3, data4,data5, data6, data7) {
+$.when(geoInfo, capitalFetch, earthQuake, weather, webcam, covid, weatherModal, country).then(function (data1, data2, data3, data4,data5, data6, data7, data8) {
 //geoinfo info
 let geoData = data1[0]['data'][0];
+var population = geoData['population'];
+var wiki = 'https://en.wikipedia.org/wiki/' + countryName;
+var flag = data8[0]['data']['data'].flagImageUri;
+
 
 $('#countryName').html(geoData['countryName']);
 $('#capitalCity').html(geoData['capital']);
@@ -201,8 +196,10 @@ $('#continentName').html(geoData['continentName']);
 $('#languages').html(geoData['languages']);
 $('#aresqkm').html(geoData['areaInSqKm']);
 $('#currency').html(geoData['currencyCode']);
-$('#population').html(geoData['population']);
+$('#population').html(Number(population).toLocaleString('en-US'));
 $('#countryCode').html(geoData['countryCode']);
+$('#countryWiki').attr('href', wiki);
+$('#flag').attr('src', flag);
 
 //covid stat
 let covidData;
@@ -462,34 +459,17 @@ $('#preloader').addClass('hide');
 //----------------------------------------------------------------
 
 $(window).on('load',function() {
-
     var hooverStyle = {
         fillColor: 'lightGrey',
         weight: 3,
         color: '#666',
         dashArray: '',
         fillOpacity: 0.7
-    }
-
-function style(feature) {
-    return {
-        fillColor: '#fff',
-        weight: 2,
-        opacity: 1,
-        color: 'none',
-        dashArray: '3',
-        fillOpacity: 0
     };
-};
-
-var geojson;
 //add all of the country layer and fill up options
 var getFeatures = fetchData({}, './libs/php/countryBorders.php');
-var geometry = fetchData({}, './libs/php/countryGeo.php');
-
-
-$.when(getFeatures, geometry).then(function(data1,data2){
-    var countryCode = data1[0]['data'];
+getFeatures.done(function(data1){
+    var countryCode = data1['data'];
     for(var i = 0; i < countryCode.length; i++) {
         var option = '';
         var iso_a2 = countryCode[i].code;
@@ -498,24 +478,11 @@ $.when(getFeatures, geometry).then(function(data1,data2){
         $('#items').append(option);
 
     }
-
- geojson = L.geoJson(data2[0]['data'], {
-    style: style,
-    onEachFeature: onEachFeature
-}).addTo(map);  
 //endo of country layer
 }).fail(error);
 
-function updateCountryClick(e) {
-    $('#preloader').removeClass('hide');
-    geojson.resetStyle();
-    var layer = e.target;
-    layer.setStyle(hooverStyle);
-    center = layer.getBounds().getCenter();
-    $('#items').val(layer.feature.properties.iso_a2)
-    map.fitBounds(layer.getBounds());
-    updateAll();
 
+function updateCountryClick(e) {
 //find nearby api call
     var findNearby = fetchData(
             {
@@ -538,35 +505,10 @@ function updateCountryClick(e) {
         };
         map.addLayer(findNearbyCluster);
     });
-
-
-}
-
-function onEachFeature(feature, layer) {
-    layer.on({
-        //mouseover: highlightFeature,
-        //mouseout: resetHighlight,
-        click: updateCountryClick
-    });
 };
-//onchange function
-$( "#items" ).change(function() {
-    $('#preloader').removeClass('hide');
-    geojson.resetStyle();
-    var changeVal = $('#items').val();
-    geojson.eachLayer(function (layer) {
-        var id = layer.feature.properties.iso_a2;
-        if(id === changeVal) {
-            layer.setStyle(hooverStyle);
-            map.fitBounds(layer.getBounds());
-            
-        }
-      });
-      updateAll();
-  });
-//end of onchange function
+map.on('click', updateCountryClick);
 
-//start current location
+//current location details
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
         var latData = position.coords.latitude;
@@ -577,21 +519,41 @@ if (navigator.geolocation) {
         );
         currentLatLng.done(function(data) {
                     $('#items').val(data['data'].countryCode);
-
-                    geojson.eachLayer(function (layer) {
-                        var id = layer.feature.properties.iso_a2;
-                        if(id === data['data'].countryCode) {
-                            layer.setStyle(hooverStyle);
-                            map.fitBounds(layer.getBounds());
-                        }
-                      });
+                    var code = data['data'].countryCode;
+                    var currentFeature = fetchData({iso: code}, './libs/php/countryGeo.php');
+                    currentFeature.done(function(data) {
+                        geojson = L.geoJson(data['data'], {
+                            style: hooverStyle,
+                            //onEachFeature: onEachFeature
+                        }).addTo(map);
+                        map.fitBounds(geojson.getBounds());
+                        center = geojson.getBounds().getCenter();
+                    });
                     //call the functional functions with the rest of the api call
                     updateAll();
         });   
     });
 } else {
     alert('Please, enable the location');
-}
-//end of current locatio   
+};
+//end of load current location
+
+$( "#items" ).change(function() {
+    $('#preloader').removeClass('hide');
+    map.removeLayer(geojson);
+    //map.removeLayer(geojson);
+    var isoCode = $('#items').val();
+    var geometry = fetchData({iso: isoCode}, './libs/php/countryGeo.php');   
+    geometry.done(function(data) {
+        geojson = L.geoJson(data['data'], {
+            style: hooverStyle,
+            //onEachFeature: onEachFeature
+        }).addTo(map);
+        map.fitBounds(geojson.getBounds());
+        center = geojson.getBounds().getCenter();
+    });
+    updateAll();
+  });
+  
 //end of onload function
 });
