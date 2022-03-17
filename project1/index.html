@@ -45,7 +45,6 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content text-white shadow-4-strong" id="wrapper-bg">
     <div class="modal-header">
-
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -206,7 +205,10 @@
     <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="countryName">Country Name</h5>
+          <a id='countryWiki' href="" target="_blank"><h5 class="modal-title" id="countryName">Country Name</h5></a>
+          <div class="flagbox">
+            <img id="flag" class="flagClass" src="" alt="flag">
+          </div>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -225,12 +227,11 @@
   </div>
 
     <div id="map">
-        <div class="searchBox d-flex flex-row">
+        <div class="searchBox">
             <select id="items" class="browser-default custom-select itemsClass" aria-label=".form-select-sm example">
                 <option value="0">Select Country</option>
             </select>
         </div>
-        <div id="chartContainer" class='covid hide'></div>
     </div>
     <div id="preloader"></div>
 
