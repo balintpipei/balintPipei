@@ -1,11 +1,6 @@
 
 var center;
 var geojson;
-var map = L.map('map',{
-    center: [0,0],
-    zoom: 2,
-});
-
 
 var baseLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -14,16 +9,77 @@ var baseLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}
     tileSize: 512,
     zoomOffset: -1,
     accessToken: 'pk.eyJ1IjoiYmFsaW50MTEyMCIsImEiOiJja3p3cDA3MnQ2eDRoMnVvMTVvYzE5amVyIn0.EqtGAs4TYbk6mB6l0DRP4A'
-}).addTo(map);
+});
 
 
+var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/satellite-v9',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1IjoiYmFsaW50MTEyMCIsImEiOiJja3p3cDA3MnQ2eDRoMnVvMTVvYzE5amVyIn0.EqtGAs4TYbk6mB6l0DRP4A'
+});
+
+
+var map = L.map('map',{
+    center: [0,0],
+    zoom: 2,
+    layers: satellite
+});
+
+
+
+var baseMaps = {
+    "Satellite Map": satellite,
+    "Street Map": baseLayer,
+};
+
+function centerLeafletMapOnMarker(map, marker) {
+var latLngs = [ marker.getLatLng() ];
+var markerBounds = L.latLngBounds(latLngs);
+map.fitBounds(markerBounds);
+};
+
+
+
+//zoom in buttons
+
+var zoomIn =  L.Control.extend({        
+    options: {
+      position: 'topleft'
+    },
+    onAdd: function (map) {
+      var containerDet = L.DomUtil.create('div', 'bi bi-zoom-in infoBtn');
+      containerDet.onclick = function(){
+        map.zoomIn();; 
+      }
+      return containerDet;
+    }
+  });
+  map.addControl(new zoomIn());
+
+//zoom out button
+var zoomOut =  L.Control.extend({        
+    options: {
+      position: 'topleft'
+    },
+    onAdd: function (map) {
+      var containerDet = L.DomUtil.create('div', 'bi bi-zoom-out infoBtn');
+      containerDet.onclick = function(){
+        map.zoomOut();; 
+      }
+      return containerDet;
+    }
+  });
+  map.addControl(new zoomOut());
 //button for details box
 var customControl =  L.Control.extend({        
     options: {
       position: 'topleft'
     },
     onAdd: function (map) {
-      var containerDet = L.DomUtil.create('div', 'bi bi-list infoBtn leaflet-control leaflet-bar');
+      var containerDet = L.DomUtil.create('div', 'bi bi-info infoBtn');
       containerDet.onclick = function(){
         $('#countryInfo').modal('show'); 
       }
@@ -38,7 +94,7 @@ var covidBtn =  L.Control.extend({
       position: 'topleft'
     },
     onAdd: function (map) {
-      var container = L.DomUtil.create('div', 'bi bi-eyedropper infoBtn leaflet-control leaflet-bar');
+      var container = L.DomUtil.create('div', 'bi bi-eyedropper infoBtn');
       container.onclick = function(){
         $('#covid').modal('show'); 
       }
@@ -55,7 +111,7 @@ var weather =  L.Control.extend({
       position: 'topleft'
     },
     onAdd: function (map) {
-      var container = L.DomUtil.create('div', 'bi bi-sun-fill infoBtn leaflet-control leaflet-bar');
+      var container = L.DomUtil.create('div', 'bi bi-sun-fill infoBtn');
       container.onclick = function(){
         $('#weatherModal').modal('show'); 
       }
@@ -66,6 +122,23 @@ var weather =  L.Control.extend({
   map.addControl(new weather());
 
 //endo of weather button
+//places button
+var places =  L.Control.extend({        
+    options: {
+      position: 'topleft'
+    },
+    onAdd: function (map) {
+      var container = L.DomUtil.create('div', 'bi bi-shop infoBtn');
+      container.onclick = function(){
+        $('#places').modal('show'); 
+      }
+
+      return container;
+    }
+  });
+  map.addControl(new places());
+
+//end of place button
 
 var fetchData = function(query, dataUrl) {
     return $.ajax({
@@ -87,9 +160,6 @@ var error = function(jqXHR, textStatus, errorThrown) {
 
 
 function updateAll(){
-
-
-
     var today = new Date();
     var dd = today.getDate();
     var mm = today.getMonth() + 1;
@@ -101,8 +171,13 @@ function updateAll(){
         mm = '0' + mm;
     }
     var date = yyyy + '-' + mm + '-' + dd;
-    
     let countryCode = $('#items').val();
+    let placeCode;
+    if($('#items').val() === 'GB') {
+        placeCode = 'UK'
+    } else {
+        placeCode = countryCode
+    };
     let countryName = $('#items').find('option:selected').text();
     countryName.split(' ').join('_');
 
@@ -127,9 +202,15 @@ function updateAll(){
 
 //wikipedia url ajax call
     var capitalFetch = geoInfo.then(function (data) {
+        var capital = data['data'][0]['capital'];
+        if(countryCode === 'EH') {
+            capital = 'Morocco';
+        } else {
+            capital;
+        }
         return fetchData(
             {
-                capital: data['data'][0]['capital']
+                capital: capital
             }, './libs/php/wikipedia.php'
         )
     });
@@ -180,14 +261,25 @@ function updateAll(){
         }, './libs/php/covid.php'
         );
     var country = fetchData({iso: countryCode}, './libs/php/country.php');
+
+
+//tipadvisor api call
+
+var places = fetchData(
+    {
+        countryCode: placeCode
+    }, './libs/php/tripadvisor.php'
+    );
  
 //if all of the api call success use the data
-$.when(geoInfo, capitalFetch, earthQuake, weather, webcam, covid, weatherModal, country).then(function (data1, data2, data3, data4,data5, data6, data7, data8) {
-//geoinfo info
+$.when(geoInfo, capitalFetch, earthQuake, weather, webcam, covid, weatherModal, country, places).then(function (data1, data2, data3, data4,data5, data6, data7, data8, data9) {
+    //geoinfo info
 let geoData = data1[0]['data'][0];
 var population = geoData['population'];
 var wiki = 'https://en.wikipedia.org/wiki/' + countryName;
 var flag = data8[0]['data']['data'].flagImageUri;
+
+
 
 
 $('#countryName').html(geoData['countryName']);
@@ -200,6 +292,57 @@ $('#population').html(Number(population).toLocaleString('en-US'));
 $('#countryCode').html(geoData['countryCode']);
 $('#countryWiki').attr('href', wiki);
 $('#flag').attr('src', flag);
+
+
+//places
+var placeIcon = L.icon({
+    iconUrl: './libs/img/pin.png',
+    iconSize: [50, 50], // size of the icon
+});
+
+var placeData = data9[0]['data'].results;
+var cardIndex = 0;
+let coord;
+
+showSlides(cardIndex);
+
+// Next/previous controls
+$('#plus').click(function() {
+  showSlides(cardIndex -= 1)
+});
+
+$('#minus').click(function() {
+  showSlides(cardIndex += 1)
+});
+
+$('#showMap').click(function() {
+    $('#places').modal('hide');
+   var point = L.marker([coord.latitude, coord.longitude], {icon: placeIcon}).bindPopup(`Click around ${placeData[cardIndex].name} for more cool places`);
+   point.addTo(map);
+    centerLeafletMapOnMarker(map, point);
+
+});
+
+// Thumbnail image controls
+function currentSlide() {
+  showSlides(cardIndex = 0);
+};
+
+function showSlides(n) {
+
+  if (n > placeData.length-1) {cardIndex = 0}
+  if (n < 0) {cardIndex = placeData.length-1}
+
+for(var i = 0; i < placeData[cardIndex].images.length; i++){
+   $('.imgItem')[i].src = placeData[cardIndex].images[i].sizes.medium.url;
+};
+
+$('#title').html(placeData[cardIndex].name);
+$('#snipet').html(placeData[cardIndex].snippet);
+
+coord = placeData[cardIndex].coordinates;
+
+}
 
 //covid stat
 let covidData;
@@ -418,6 +561,7 @@ switch (main) {
 }
 
 //webcam clustergroups
+
 var webcamData = data5[0]['data']['result']['webcams'];
 var webcamIcon = L.icon({
     iconUrl: './libs/img/cam.png',
@@ -426,13 +570,12 @@ var webcamIcon = L.icon({
 var webcam = L.markerClusterGroup();
 var webcamMarkers = [];
 for(var i=0; i<webcamData.length; i++) {
-    webcamMarkers.push(L.marker([webcamData[i].location.latitude, webcamData[i].location.longitude], {icon: webcamIcon}).bindPopup(`Picture about ${webcamData[i].title}<img src="${webcamData[i].image.current.thumbnail}"/>`));
+    webcamMarkers.push(L.marker([webcamData[i].location.latitude, webcamData[i].location.longitude], {icon: webcamIcon}).bindPopup(`<a href="${webcamData[i].player.day.link}" target="_blank"><img src="${webcamData[i].image.current.thumbnail}"/></a>`));
 }
 for(var i=0; i< webcamData.length; i++) {
     webcam.addLayer(webcamMarkers[i]);
 };
 map.addLayer(webcam);
-
 
 
 //map controller
@@ -443,7 +586,7 @@ var overlayMaps = {
     "Webcam": webcam,
 };
 
-var controller = L.control.layers(null, overlayMaps);
+var controller = L.control.layers(baseMaps, overlayMaps);
 controller.addTo(map);
 
 
@@ -459,6 +602,9 @@ $('#preloader').addClass('hide');
 //----------------------------------------------------------------
 
 $(window).on('load',function() {
+
+    $('.leaflet-control-zoom').remove();
+
     var hooverStyle = {
         fillColor: 'lightGrey',
         weight: 3,
@@ -543,6 +689,7 @@ $( "#items" ).change(function() {
     map.removeLayer(geojson);
     //map.removeLayer(geojson);
     var isoCode = $('#items').val();
+    console.log(isoCode);
     var geometry = fetchData({iso: isoCode}, './libs/php/countryGeo.php');   
     geometry.done(function(data) {
         geojson = L.geoJson(data['data'], {
