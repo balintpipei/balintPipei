@@ -19,12 +19,10 @@
 <!--  leaflet markercluster library-->
 <link rel="stylesheet" href="./libs/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css">
 <link rel="stylesheet" href="./libs/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css">
-<script src="./libs/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js"></script>
-
-<!-- easybutton -->
-<script src="./libs/easybutton/easy-button.js"></script>
 
 
+
+    
 <!-- bootstrap library-->
 <link href="./libs/bootstrap-4.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="./libs/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -41,7 +39,17 @@
 </head>
 <body>
 
-<!-- Modal -->
+  <!--Webcam modal-->
+  <div class="modal fade" id="webcamModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <iframe id="player" src=""></iframe>
+      </div>
+    </div>
+  </div>
+
+
+<!--Places Modal -->
 <div class="modal fade" id="places" tabindex="-1" role="dialog" aria-labelledby="places" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
     <div class="modal-content">
@@ -51,7 +59,7 @@
           <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
               <div class="carousel-item active">
-                <img class="imgItem d-block w-100" src="http://some.com" alt="First slide">
+                <img class="imgItem d-block w-100" src="" alt="First slide">
               </div>
               <div class="carousel-item">
                 <img class="imgItem d-block w-100" src="" alt="Second slide">
@@ -84,13 +92,11 @@
           </div>
 
           <div class="card-body">
-            <div class="d-flex justify-content-between">
-            <a id="plus" class="prev">&#10094;</a>
-            <h5 id='title' class="card-title"></h5>
-            <a id="minus" class="next">&#10095;</a>               
+            <div class="d-flex justify-content-center">
+            <a id="placeWiki" href='' target="_blank"><h5 id='title' class="card-title"></h5></a>            
             </div>
             <p id="snipet" class="card-text"></p>
-            <button id="showMap" class="btn btn-primary">Show on Map</button>
+            <button id="showMap" class="btn btn-primary">Show Weather</button>
           </div>
         </div>        
 
@@ -167,7 +173,7 @@
             <div class="card-body px-5">
                 <div class="row align-items-center">
                   <div class="col-lg-6">
-                    <strong>Today</strong>
+                    <strong id="today"></strong>
                   </div>
     
                   <div class="col-lg-2 text-center">
@@ -181,7 +187,7 @@
     
                 <div class="row align-items-center">
                   <div class="col-lg-6">
-                    <strong>Tomorrow</strong>
+                    <strong id="tomorrow"></strong>
                   </div>
     
                   <div class="col-lg-2 text-center">
@@ -195,7 +201,7 @@
     
                 <div class="row align-items-center">
                   <div class="col-lg-6">
-                    <strong>Day after tomorrow</strong>
+                    <strong id="daftomorrow"></strong>
                   </div>
     
                   <div class="col-lg-2 text-center">
@@ -226,34 +232,34 @@
         <div class="modal-body">
             <table>
                 <tr>
+                  <td class="text-start">New Confirmed</td>
                   <td><img src="./libs/img/virus-covid-solid.svg" class="icon" ></td>
-                  <td>New Confirmed</td>
-                  <td id="newConf"></td>
+                  <td id="newConf" class="text-end"></td>
                 </tr>
                 <tr>
+                  <td class="text-start">New Recovered</td>
                   <td><img src="./libs/img/heart-pulse-solid.svg" class="icon" ></td>
-                  <td>New Recovered</td>
-                  <td id="newRec"></td>
+                  <td id="newRec" class="text-end"></td>
                 </tr>
                 <tr>
+                  <td class="text-start">New Deaths</td>
                   <td><img src="./libs/img/heart-crack-solid.svg" class="icon" ></td>
-                  <td>New Deaths</td>
-                  <td id="newDeath"></td>
+                  <td id="newDeath" class="text-end"></td>
                 </tr>
                 <tr>
-                    <td><img src="./libs/img/virus-covid-solid.svg" class="icon" ></td>
-                  <td>Total Confirmed</td>
-                  <td id="totalConf"></td>
+                  <td class="text-start">Total Confirmed</td>
+                  <td><img src="./libs/img/virus-covid-solid.svg" class="icon" ></td>
+                  <td id="totalConf" class="text-end"></td>
                 </tr>
                 <tr>
+                  <td class="text-start">Total Recovered</td>
                   <td><img src="./libs/img/heart-pulse-solid.svg" class="icon" ></td>
-                  <td>Total Recovered</td>
-                  <td id="totalRec"></td>
+                  <td id="totalRec" class="text-end"></td>
                 </tr>
                 <tr>
-                    <td><img src="./libs/img/heart-crack-solid.svg" class="icon" ></td>
-                    <td>Total Deaths</td>
-                    <td id="totalDeath"></td>
+                  <td class="text-start">Total Deaths</td>
+                  <td><img src="./libs/img/heart-crack-solid.svg" class="icon" ></td>
+                  <td id="totalDeath" class="text-end"></td>
                 </tr>
 
 
@@ -281,7 +287,7 @@
             <p>Population: <span id="population" class="result"></span></p>    
             <p>Currency:    <span id="currency" class="result"></span></p> 
             <p>Languages:     <span id="languages" class="result"></span></p> 
-            <p>Area:      <span id="aresqkm" class="result"></span> km<sup>2</sup></p>
+            <p>Area:      <span id="aresqkm" class="result"></span></p>
             <p>CountryCode:     <span id="countryCode" class="result"></span></p> 
         </div>
       </div>
@@ -295,13 +301,22 @@
             </select>
         </div>
     </div>
+
+
+    <div id="cover"></div>
     <div id="preloader"></div>
 
 
-
+    <!--Jquery Library-->
     <script src="./libs/js/jquery-2.2.3.min.js"></script>
     <script src="./libs/js/canvasjs.min.js"></script>
+    <!--Bootstrap JavaScript-->
     <script src="./libs/bootstrap-4.0.0/dist/js/bootstrap.min.js"></script>
+    <!--Markercluster js-->
+    <script src="./libs/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js"></script>
+    <!-- easybutton js -->
+    <script src="./libs/easybutton/easy-button.js"></script>
+
     <script src="./libs/js/main.js"></script>
 </body>
 </html>
