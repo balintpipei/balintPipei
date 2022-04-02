@@ -92,7 +92,7 @@ body{
     transform: scale(1.2);
   }
 }
-.bi-info, .bi-eyedropper, .bi-cursor-fill, .bi-zoom-in, .bi-zoom-out, .bi-shop{
+.bi-info, .bi-eyedropper, .bi-cursor-fill, .bi-zoom-in, .bi-zoom-out, .bi-shop, .bi-currency-exchange{
   font-size: 20px;
 }
 
@@ -130,7 +130,7 @@ tr:nth-child(even) {
       width: 20px;
       height: 20px;
 }
-.container, #player{
+.container {
       width: 100%;
       height: 100%;
 }
@@ -161,9 +161,28 @@ tr:nth-child(even) {
 .leaflet-top, .leaflet-left{
     z-index: 999;
 }
-.leaflet-popup{
-    max-width: 320px;
-}
+
+.leaflet-popup-content-wrapper {
+    background: #e7e7e7;
+    border-radius: 2px;
+    margin: 0;
+    padding: 0;
+    }
+ 
+ .leaflet-popup {
+     position: absolute;
+     text-align: center;
+     margin: 0;
+     padding: 0;
+     }
+ 
+ .leaflet-popup-content {
+     margin: 5px 5px 0 5px !important;
+     min-width: 320 px !important;
+     max-height: 300px;
+     overflow: auto;
+     }
+
 #placeWiki{
     text-decoration: none;
     color: black;
@@ -171,5 +190,84 @@ tr:nth-child(even) {
 #placeWiki:hover{
     text-decoration: underline;
 }
+#earth{
+    position: relative;
+    width: 173px;
+    height: 173px;
+}
+.info{
+    position: absolute;
+    line-height: 0;
+    font-size: 10px;
+}
 
+.text{
+    font-size: 13px;
+}
 
+#one{
+    top: 115px;
+    right: 5px;
+}
+#two{
+    top: 45px;
+    left: 20px;
+}
+#three{
+    top: 90px;
+    left: 10px;
+}
+#four{
+    top: 35px;
+    right: 20px;
+}
+.head{
+    text-decoration: underline;
+}
+.topPart{
+    margin-bottom: 30px;
+}
+#currencySymbol{
+    position: absolute; 
+    margin-left: 1px; 
+    margin-top: 1px;
+    font-size: 24px;
+}
+.form-input{
+    padding-left: 25px;
+    width: 120px;
+    border: none;
+    font-size: 24px;
+}
+.money{
+    position: relative;
+}
+.amount{
+    padding-left: 3px;
+}
+.currencySelect{
+    width: 170px;
+}
+.currencyTop{
+    line-height: 15px;
+    font-weight: normal;
+}
+.currencyCode{
+    font-size: 13px;
+    color: gray;
+}
+.currencyRight{
+    text-align: right;
+}
+.bi-arrow-left-right{
+    font-size: 24px;
+    margin: 15px;
+}
+@media only screen and (max-width: 400px) {
+    .bi-arrow-left-right {
+      font-size: 12px;
+    }
+    .form-input{
+        width: 80px;
+    }
+  }
