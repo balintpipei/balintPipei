@@ -39,14 +39,68 @@
 </head>
 <body>
 
-  <!--Webcam modal-->
-  <div class="modal fade" id="webcamModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-          <iframe id="player" src=""></iframe>
+
+<!-- Currency Converter Modal -->
+<div class="modal fade" id="currencyConverter" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4><span id="countryCurrency"></span>Currency Converter</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="topPart d-flex justify-content-around align-items-center">
+          <div class="money">
+            <span id="currencySymbol"></span>
+            <input type="number" class="form-input" id="number" value="1" min="1">
+          </div>
+      <div>
+        <span class="bi bi-arrow-left-right"></span>
+      </div>
+      <div class="currencySelect">
+                <select id="currencySelect" class="browser-default custom-select itemsClass">
+                  <option value="0" selected>Select Currency</option>
+                </select>
+        </div>
+      </div>
+      <div>
+        <table id="currencyTable">
+          <tr>
+            <td>
+                <p class="currencyTop"><span class="currencyCode">USD</span><br>United States Dollar</p>
+            </td>
+            <td class="currencyRight"><span>$</span><span class="amount"></span></td>
+          </tr>
+          <tr>
+            <td>
+                <p class="currencyTop"><span class="currencyCode">GBP</span><br>United Kingdom Pound</p>
+            </td>
+            <td class="currencyRight"><span>£</span><span class="amount"></span></td>
+          </tr>
+          <tr>
+            <td>
+                <p class="currencyTop"><span class="currencyCode">HUF</span><br>Hungary Forint</p>
+            </td>
+            <td class="currencyRight" ><span>Ft</span><span class="amount"></span></td>
+          </tr>
+          <tr>
+            <td>
+                <p class="currencyTop"><span class="currencyCode">JPY</span><br>Japan Yen</p>
+            </td>
+            <td class="currencyRight"><span>¥</span><span class="amount"></span></td>
+          </tr>        
+        </table>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <a href="https://www.exchangerate-api.com" target="_blank">Rates By Exchange Rate API</a>
       </div>
     </div>
   </div>
+</div>
+
 
 
 <!--Places Modal -->
