@@ -314,6 +314,22 @@ var covidBtn =  L.Control.extend({
   map.addControl(new covidBtn());
 
 //end of covid stat button
+//currency buttons
+var currencyBtn =  L.Control.extend({        
+    options: {
+      position: 'topleft'
+    },
+    onAdd: function (map) {
+      var container = L.DomUtil.create('div', 'bi bi-currency-exchange infoBtn');
+      container.onclick = function(){
+        $('#currencyConverter').modal('show'); 
+      }
+      return container;
+    }
+  });
+  map.addControl(new currencyBtn());
+
+//endo of currency button
 
 var fetchData = function(query, dataUrl) {
     return $.ajax({
@@ -369,11 +385,7 @@ function updateAll(){
 //call apis
 //all of ajax call returns
     //geoInfo api
-    var geoInfo = fetchData(
-        {
-            countryCode: countryCode
-        }, './libs/php/countryInfo.php'
-        );
+var geoInfo = fetchData({countryCode: countryCode}, './libs/php/countryInfo.php');
 
 //earthquake api call
     var earthQuake = geoInfo.then(function(data){
@@ -386,6 +398,16 @@ function updateAll(){
             }, './libs/php/earthquake.php'
         )
     });
+
+//currencyResult
+
+var currencyResult = geoInfo.then(function(data) {
+    return fetchData({
+        currencyCode: data['data'][0]['currencyCode']
+    }, './libs/php/currencyResult.php'
+    )
+});
+
 //weather api call
     var weather = geoInfo.then(function (data) {
         return fetchData(
@@ -398,32 +420,25 @@ function updateAll(){
         )
     });
 //webcam api call
-    var webcam = fetchData(
-        {
-            countryCode: countryCode
-        }, './libs/php/webcam.php'
-        );
+var webcam = fetchData({countryCode: countryCode}, './libs/php/webcam.php');
 //covid api call
-    var covid = fetchData(
-        {
-            date: date,
-            countryName: countryName
+var covid = fetchData({date: date,countryName: countryName}, './libs/php/covid.php');
 
-        }, './libs/php/covid.php'
-        );
-    var country = fetchData({iso: countryCode}, './libs/php/country.php');
-
+//country Info
+var country = fetchData({iso: countryCode}, './libs/php/country.php');
 
 //tipadvisor api call
 
-var places = fetchData(
-    {
-        countryCode: placeCode
-    }, './libs/php/tripadvisor.php'
-    );
+var places = fetchData({countryCode: placeCode}, './libs/php/tripadvisor.php');
+
+//currencyData from json
+
+var currencyData = fetchData({}, './libs/php/currencyData.php');
+
+
  
 //if all of the api call success use the data
-$.when(geoInfo, earthQuake, weather, webcam, covid, country, places).then(function (data1, data3, data4,data5, data6, data8, data9) {
+$.when(geoInfo,currencyData, earthQuake, weather, webcam, covid, currencyResult, country, places).then(function (data1,data2, data3, data4,data5, data6, data7, data8, data9) {
     //geoinfo info
 let geoData = data1[0]['data'][0];
 var population = geoData['population'];
@@ -442,6 +457,76 @@ $('#population').html(Number(population).toLocaleString('en-US'));
 $('#countryCode').html(geoData['countryCode']);
 $('#countryWiki').attr('href', wiki);
 $('#flag').attr('src', flag);
+$('#countryCurrency').html(geoData['currencyCode'] + ' ');
+
+//currencyData handle
+
+var currencyData = data2[0]['data'];
+var currencyResult = data7[0]['data']['conversion_rates'];
+for(var i = 0; i < currencyData.length; i++) {
+    if(currencyData[i].abbreviation == geoData['currencyCode']){
+        $('#currencySymbol').html(currencyData[i].symbol)
+    }
+    var options = '';
+    options += '<option value="'+ currencyData[i].abbreviation + '">' + currencyData[i].currency + '</option>';      
+    $('#currencySelect').append(options);
+};
+
+function changer(){
+    let number = $('#number').val();
+    let amountArray = [];
+        $('.currencyCode').each(function(){
+        for(const property in currencyResult) {
+            if(property == $(this).text()) {
+                amountArray.push(currencyResult[property]);
+                $('.amount').text(function(i){
+                    var num = Math.round(number * amountArray[i] * 100) / 100
+                    return num.toLocaleString();
+                });
+            }
+        }
+    }); 
+};
+changer();
+
+$('#number').change(function(){
+    changer();
+});
+$('#currencySelect').change(function(){
+    let number = $('#number').val();
+    var newCurrencyCode = $(this).val();
+    var newCurrencyName = $(this).find('option:selected').text();
+    var newSymbol;
+    var newAmount;
+    let code = [];
+    $('.currencyCode').each(function () {
+        code.push($(this).text());
+    })
+    for(var i = 0; i < currencyData.length; i++) {
+        if(currencyData[i].abbreviation == newCurrencyCode) {
+            newSymbol = currencyData[i].symbol;
+        }
+    };
+    for(const property in currencyResult) {
+        if(property == newCurrencyCode) {
+            var newNum = Math.round(number * currencyResult[property] * 100) / 100
+                newAmount = newNum.toLocaleString();
+        }
+    }
+    var infoText = `<tr>
+    <td>
+        <p class="currencyTop"><span class="currencyCode">${newCurrencyCode}</span><br>${newCurrencyName}</p>
+    </td>
+    <td class="currencyRight"><span>${newSymbol}</span><span class="amount">${newAmount}</span></td>
+  </tr>`
+
+    if(code.includes(newCurrencyCode) === false){
+        $('#currencyTable').append(infoText);
+    }
+    changer();
+})
+
+
 
 //places
 function showPlaces(e){
@@ -520,13 +605,21 @@ var earthquakeIcon = L.icon({
     iconUrl: './libs/img/caution.png',
     shadowUrl: './libs/img/shadow.png',
     popupAnchor:  [15, 3],
-    iconAnchor:   [-3, -3],
 });
+
 var earthquakes = L.markerClusterGroup();
 var markers = [];
 for(var i=0; i< data3[0]['data'].length; i++) {
+
+    var customPopup = `<div id="earth">
+    <img src="./libs/img/earthquake.jpeg">
+    <div id="one" class="info"><p class="head">Date Time:</p><p class="text">${data3[0]['data'][i].datetime.slice(0,10)}</p></div>
+    <div id="two" class="info"><p class="head">Depth:</p><p class="text">${data3[0]['data'][i].depth}</p></div>
+    <div id="three" class="info"><p class="head">Magnitude</p><p class="text">${data3[0]['data'][i].magnitude}</p></div>
+    <div id="four" class="info"><p class="head">Src:</p><p class="text">${data3[0]['data'][i].src}</p></div>
+    </div>`
   
-   markers.push(L.marker([data3[0]['data'][i].lat, data3[0]['data'][i].lng], {icon: earthquakeIcon}).bindPopup('Earthquake Info<br>' + '<br>Data Time: ' + data3[0]['data'][i].datetime.slice(0,10) + '<br>Depth: ' + data3[0]['data'][i].depth + '<br>Magnitude: ' + data3[0]['data'][i].magnitude + '<br>Src: ' + data3[0]['data'][i].src));
+   markers.push(L.marker([data3[0]['data'][i].lat, data3[0]['data'][i].lng], {icon: earthquakeIcon}).bindPopup(customPopup));
 };
 for(var i=0; i< data3[0]['data'].length; i++) {
     earthquakes.addLayer(markers[i]);
@@ -567,15 +660,6 @@ map.addLayer(weather);
 
 //webcam clustergroups
 
-function webcamClick(e){
-    $('#webcamModal').modal('show');
-    for(var i=0; i<webcamData.length; i++) {
-        if(e.latlng.lat == webcamData[i].location.latitude && e.latlng.lng == webcamData[i].location.longitude){
-            $('#player').attr('src',webcamData[i].player.day.embed)
-    }
-}
-}
-
 var webcamData = data5[0]['data']['result']['webcams'];
 var webcamIcon = L.icon({
     iconUrl: './libs/img/cam.png',
@@ -585,13 +669,12 @@ var webcamIcon = L.icon({
 var webcam = L.markerClusterGroup();
 var webcamMarkers = [];
 for(var i=0; i<webcamData.length; i++) {
-    webcamMarkers.push(L.marker([webcamData[i].location.latitude, webcamData[i].location.longitude], {icon: webcamIcon}));
+    webcamMarkers.push(L.marker([webcamData[i].location.latitude, webcamData[i].location.longitude], {icon: webcamIcon}).bindPopup(`<iframe id="player" src="${webcamData[i].player.day.embed}"></iframe>`));
 }
 for(var i=0; i< webcamData.length; i++) {
     webcam.addLayer(webcamMarkers[i]);
 };
 map.addLayer(webcam);
-webcam.on('click', webcamClick);
 
 //map controller
 var overlayMaps = {
@@ -630,11 +713,11 @@ var getFeatures = fetchData({}, './libs/php/countryBorders.php');
 getFeatures.done(function(data1){
     var countryCode = data1['data'];
     for(var i = 0; i < countryCode.length; i++) {
-        var option = '';
+        var options = '';
         var iso_a2 = countryCode[i].code;
         var name = countryCode[i].name;
-        option += '<option value="'+ iso_a2 + '">' + name + '</option>';      
-        $('#items').append(option);
+        options += '<option value="'+ iso_a2 + '">' + name + '</option>';      
+        $('#items').append(options);
 
     }
 //endo of country layer
@@ -708,6 +791,7 @@ $( "#items" ).change(function() {
             style: hooverStyle,
         }).addTo(map);
         map.fitBounds(geojson.getBounds());
+        geojson.on('click', updateCountryClick);
         center = geojson.getBounds().getCenter();
     });
     updateAll();
