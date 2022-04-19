@@ -1,0 +1,246 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    margin: 0;
+    padding: 0;
+    background-color: rgba(27, 27, 27, 0.913);
+}
+.hide{
+    display: none;
+}
+#top{
+    width: 100%;
+    height: auto;
+    background-image: url('../img/back1.jpeg');
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: cover;
+}
+#topBox{
+    width: 85%;
+    min-height: 60%;
+    margin: 10vh 0;
+    padding: 20px;
+    background: rgba(95, 95, 95, 0.699);
+    border-radius: 5px;
+}
+@media screen and (max-width: 400px) {
+    #topBox{
+      width: 100%;
+    }
+  }
+#searchIcon{
+    position: absolute; 
+    margin-left: 5px; 
+    margin-top: 1px;
+    font-size: 21px;
+}
+@media screen and (max-width: 400px) {
+    #searchIcon{
+      font-size: 15px;
+    }
+  }
+.form-input{
+    padding-left: 28px;
+    width: 250px;
+}
+@media screen and (max-width: 400px) {
+    .form-input{
+      width: 200px;
+      padding-left: 24px;
+      font-size: 15px;
+    }
+  }
+.searchContainer{
+    position: relative;
+    margin: 20px 0;
+    font-size: 21px;
+}
+
+.filterBtn{
+    margin: 0 8px;
+}
+
+#filterResult{
+    width: 50%;
+    height: auto;
+}
+@media screen and (max-width: 400px) {
+    #filterResult{
+      width: 100%;
+    }
+  }
+
+.filters{
+    margin: 3px;
+    font-size: 10px;
+}
+#personsTab{
+    width: 34%;
+}
+#depTab{
+    width: 32%;
+}
+#locTab{
+    width: 34%;
+}
+.nav-item{
+    text-align: center;
+    padding: 15px;
+    color:rgb(98, 98, 98)
+}
+.nav-item:hover{
+    color: green;
+}
+@media screen and (max-width: 400px) {
+    .nav-item h5{
+      font-size: 12px;
+    }
+  }
+#abc{
+    position: absolute;
+    top: 65vh;
+    left: 10px;
+}
+#abc p{
+    font-size: 12px;
+    margin:0;
+    color: green;
+    font-weight: bold;
+}
+#abc p:hover{
+    font-size: 16px;
+}
+.number{
+    margin: 0 5px;
+}
+#bottom{
+    width: 100%;
+    padding: 2em;
+    background: white;
+}
+
+.personsCard{
+    width: 250px;
+    height: 470px;
+    overflow: scroll;
+}
+.depsCard{
+    width: 250px;
+    height: 350px;
+    overflow: scroll;
+}
+.locsCard{
+    width: 250px;
+    height: 300px;
+    overflow: scroll;
+}
+.avatar{
+    width: 100px;
+    height: 100px;
+}
+.locPic{
+    width:100%;
+    height: 100px;
+}
+.depPic{
+    width: 150px;
+    height: 100px;
+}
+.card-title{
+    margin: 20px 0 20px 0;
+}
+.info, .editInfo{
+    margin-bottom: 0;
+    text-decoration: underline;
+}
+.info{
+      font-size: 20px;  
+}
+.avatarSelect{
+    width: 50%;
+    margin: 10px 0;
+}
+#respondModalHeader{
+    max-width: 50%;
+}
+.filterHead{
+    text-decoration: underline;
+    font-size: 20px;
+    margin: 15px 0;
+}
+.depcheckBox, .loccheckBox{
+    margin: 0 20px 0 0;
+}
+.locTable, .depTable{
+    width: 233px;
+}
+.deleteBtn{
+    color: red;
+}
+.saveBtn{
+    color: green;
+}
+.cancel{
+    padding: 15px;
+}
+#respondModal p, #deleteModal p{
+    font-size: 18px;
+    padding: 10px;
+}
+
+
+
+
+
+/*preloader*/
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    overflow: hidden;
+    background: #fff;
+}
+
+#preloader:before{
+    content:"";
+    position: fixed;
+    top: calc(50%-30px);
+    left: calc(50%-30px);
+    border: 6px solid #f2f2f2;
+    border-top: 6px solid #56829e;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+
+    -webkit-animation: animate-preloader 1s linear infinite;
+    animation: animate-preloader 1s linear infinite;
+}
+
+@-webkit-keyframes animate-preloader {
+    0%{
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100%{
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes animate-preloader {
+    0%{
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100%{
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+/*end of preloader */

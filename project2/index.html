@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompanyDirectory BalintPipei</title>
+
+
+    <link rel="icon" href="./libs/img/favicon/favicon.png">
+
+    <link rel="stylesheet" href="./libs/bootstrap-4.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./libs/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="./libs/css/style.css">
+
+</head>
+<body>
+    <section id="top" class="d-flex flex-column justify-content-between align-items-center">
+        <div id="topBox" class="d-flex flex-column align-items-center">
+            <div id="addBtnBox">
+                <button id="addPersonBtn" type="button" class="btn btn-dark btn-lg addBtn">
+                    <i class= " bi bi-person-circle "></i>
+                </button>
+                <button id="addDepBtn" type="button" class="btn btn-dark btn-lg addBtn">
+                    <i class=" bi bi-building "></i>
+                </button>
+                <button id="addLocBtn" type="button" class="btn btn-dark btn-lg addBtn">
+                    <i class=" bi bi-pin-map-fill "></i>
+                </button>
+            </div>
+            <div id="searchBox">
+                <div class="searchContainer d-flex align-items-center">
+                    <span id="searchIcon" class="bi bi-search"></span>
+                    <input id="search" type="text" class="form-input" placeholder="Search by Name" val="" autocomplete="off">
+                    <button id="searchBtn" type="button" class="btn btn-dark filterBtn"><i class="bi bi-search"></i></button>
+                    <button id="filterBtn" type="button" class="btn btn-dark filterBtn"><i class="bi bi-funnel"></i></button>
+                </div>
+            </div>
+            <div id="filterResult" class="d-flex flex-row flex-wrap justify-content-around align-items-center">
+
+            </div>    
+        </div>
+        <nav class="w-100">
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="personsTab" data-toggle="tab" href="#personsTabBox" role="tab" aria-controls="nav-persons" aria-selected="true">
+                    <h5>Persons</h5>
+                    <span class="bi bi-person-circle"></span><span id="personNumber" class="number"></span>
+                </a>
+                <a class="nav-item nav-link" id="depTab" data-toggle="tab" href="#depTabBox" role="tab" aria-controls="nav-departments" aria-selected="false">
+                    <h5>Departments</h5>
+                    <span class="bi bi-building"></span><span id="depNumber" class="number"></span> 
+                </a>
+                <a class="nav-item nav-link" id="locTab" data-toggle="tab" href="#locTabBox" role="tab" aria-controls="nav-locations" aria-selected="false">
+                    <h5>Locations</h5>
+                    <span class="bi bi-pin-map-fill"></span><span id="locNumber" class="number"></span>
+                </a>
+            </div>
+        </nav>
+    </section>
+    <section id="bottom">
+        <div class="tab-content" id="nav-tabContent">
+            <div id="personsTabBox" class="tab-pane fade show active " role="tabpanel">
+                <div id="personsCardBox" class="d-flex flex-wrap justify-content-between align-items-center"  >  
+                </div> 
+            </div>
+            <div id="depTabBox" class="tab-pane fade" role="tabpanel">
+                <div id="depCardBox" class="d-flex flex-wrap justify-content-between align-items-center">
+                </div>
+            </div>
+            <div id="locTabBox" class="tab-pane fade" role="tabpanel">
+                <div id="locCardBox"  class="d-flex flex-wrap justify-content-between align-items-center">
+                </div>
+            </div>
+        </div>
+    </section>
+    <div id="abc"></div>
+<!--Add new Person/Department/Location-->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <div class="w-100 d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                        <h6 class="modal-title" id="addTitle"></h6>
+                        <button id="addNewPersonBtn" type="button" class="btn btn-success">
+                            <span class="bi bi-plus-circle"></span>
+                        </button>
+                        <button id="addNewDepBtn" type="button" class="btn btn-success">
+                            <span class="bi bi-plus-circle"></span>
+                        </button> 
+                        <button id="addNewLocBtn" type="button" class="btn btn-success">
+                            <span class="bi bi-plus-circle"></span>
+                        </button> 
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="newEdit text-left">
+                    <div id="fNameForm" class="form-group">
+                        <label for="fname" class="editInfo">First Name:</label>
+                        <input id="newFNameValue" type="text" class="form-control" value="" placeholder="First Name">
+                    </div>
+                    <div id="lNameForm" class="form-group">
+                        <label for="lname" class="editInfo">Surname:</label>
+                        <input id="newLNameValue" type="text" class="form-control" value="" placeholder="Surname">
+                    </div>
+                    <div id="emailForm" class="form-group">
+                        <label for="email" class="editInfo">Email:</label>
+                        <input id="newEmailValue" type="text" class="form-control" value="" placeholder="Email" >
+                    </div>
+                    <div id="depForm" class="form-group">
+                        <label for="department" class="editInfo">Department:</label>
+                        <input id="newDepValue" type="text" class="form-control" value="" placeholder="Department">
+                        <select id="newDepSelect" class="browser-default custom-select">
+                        </select>
+                    </div>
+                    <div id="locForm" class="form-group">
+                        <label for="location" class="editInfo">Location:</label>
+                        <input id="newLocValue" type="text" class="form-control" value="" placeholder="Location">
+                        <select id="newLocSelect" class="browser-default custom-select">
+                        </select>
+                    </div>                           
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+<!--Respond answer for adding-->
+<div id="respondModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content text-center">
+                <p id="respondAdd"></p>
+                <div class="w-100 text-center m-1">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                        <span class="bi bi-x"></span>
+                    </button>                    
+                </div>
+
+      </div>
+    </div>
+  </div>
+<!--Delete modal-->
+<div id="deleteModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <div class="text-center w-100">
+                <p id="deleteText"></p>
+                <div class="text-center w-100 m-2">
+                    <button id="deleteYes" type="button" class="btn btn-success my-3">
+                        <span class="">Yes</span>
+                    </button>
+                    <button id="deleteNo" type="button" class="btn btn-danger my-3">
+                        <span class="">No</span>
+                    </button>                     
+                </div>
+             
+          </div>
+
+      </div>
+    </div>
+  </div>
+<!--Filter modal-->
+<div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+                    <h4 class="modal-title" id="">Filter</h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+        </div>
+        <div class="modal-body">
+            <div>
+                <p class="filterHead">Departments</p>
+                <div id="depFilterTag" class="w-100 d-flex flex-wrap">
+
+                </div>
+            </div>
+            <div>
+                <p class="filterHead">Locations</p>
+                <div id="locFilterTag" class="w-100 d-flex flex-wrap">
+
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+    <script type="text/javascript" src="./libs/js/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript" src="./libs/bootstrap-4.0.0/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./libs/js/main.js"></script>
+</body>
+</html>
