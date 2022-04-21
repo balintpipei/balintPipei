@@ -34,30 +34,17 @@
 
 	// SQL does not accept parameters and so is not prepared
 
+
+
 	$search = $_POST['search'];
-
-	$query = 'SELECT p.lastName, p.firstName as name, p.jobTitle, p.email, p.id, d.id as departmentId, d.name as department, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) ';
-
-	if(strlen($search) > 0) {
-		$query .= ' WHERE p.lastName LIKE "%' . $search . '%" OR p.firstName LIKE "%' . $search . '%" OR p.email LIKE "%' . $search . '%" OR d.name LIKE "%' . $search . '%" OR l.name LIKE "%' . $search . '%" ';
-	}
-
-	$result = $conn->query($query);
 	
-	if (!$result) {
+	$search = "%".$search."%";
 
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
+	$stmt = $conn->prepare('SELECT p.lastName, p.firstName as name, p.jobTitle, p.email, p.id, d.id as departmentId, d.name as department, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) WHERE p.lastName LIKE ? OR p.firstName LIKE ? OR p.email LIKE ? OR d.name LIKE ? OR l.name LIKE ?');
+	$stmt->bind_param("sssss", $search, $search, $search, $search, $search);
+	$stmt->execute();
 
-		mysqli_close($conn);
-
-		echo json_encode($output); 
-
-		exit;
-
-	}
+	$result = $stmt->get_result();
    
    	$data = [];
 

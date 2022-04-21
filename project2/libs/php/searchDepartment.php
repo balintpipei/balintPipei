@@ -30,34 +30,16 @@
 
 	// SQL does not accept parameters and so is not prepared
 	
+
 	$search = $_POST['search'];
 	
-	$query = 'SELECT d.id as departmentID, d.name as departmentName, l.id as locationID, l.name as location FROM department d LEFT JOIN location l ON (l.id = d.locationID) ';
+	$search = "%".$search."%";
 
+	$stmt = $conn->prepare('SELECT d.id as departmentID, d.name as departmentName, l.id as locationID, l.name as location FROM department d LEFT JOIN location l ON (l.id = d.locationID) WHERE d.name LIKE ? OR l.name LIKE ? ORDER BY d.name');
+	$stmt->bind_param("ss", $search, $search);
+	$stmt->execute();
 
-	if(strlen($search) > 0) {
-		$query .= ' WHERE d.name LIKE "%' . $search . '%" OR l.name LIKE "%' . $search . '%" ';
-	}
-
-	
-	$query.= ' ORDER BY d.name';
-
-	$result = $conn->query($query);
-	
-	if (!$result) {
-
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
-
-		mysqli_close($conn);
-
-		echo json_encode($output); 
-
-		exit;
-
-	}
+	$result = $stmt->get_result();
    
    	$data = [];
 
@@ -66,9 +48,11 @@
 		array_push($data, $row);
 
 	}
+
 	usort($data, function ($item1, $item2) {
         return $item1['departmentName'] <=> $item2['departmentName'];
     });
+
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";

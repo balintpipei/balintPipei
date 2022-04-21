@@ -30,29 +30,14 @@
 	}	
 
 	$search = $_POST['search'];
-
-	$query = 'SELECT id, name FROM location ';
-
-	if(strlen($search) > 0) {
-		$query .= ' WHERE name LIKE "%' . $search . '%" ';
-	}
-
-	$result = $conn->query($query);
 	
-	if (!$result) {
+	$search = "%".$search."%";
 
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
+	$stmt = $conn->prepare('SELECT id, name FROM location WHERE name LIKE ?');
+	$stmt->bind_param("s", $search);
+	$stmt->execute();
 
-		mysqli_close($conn);
-
-		echo json_encode($output); 
-
-		exit;
-
-	}
+	$result = $stmt->get_result();
    
 
    	$data = [];
