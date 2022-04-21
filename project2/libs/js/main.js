@@ -56,19 +56,6 @@ $('document').ready(function() {
     })
 });
 
-function fetchDataGet(query, dataUrl) {
-    return $.ajax({
-        data: query,
-        dataType: 'json',
-        type: 'POST',
-        url: dataUrl,
-    });
-};
-var error = function(jqXHR, textStatus, errorThrown) {
-    var errorMessage = jqXHR.status + ': ' + jqXHR.statusText
-    alert('Error - ' + errorMessage);
-};
-
 //add new department
 function addNewDepartment(){
 
@@ -414,7 +401,6 @@ function deleteChange(){
                 dataType: 'json',
                 data: {id: currentId},
                 success: function(result) {
-                    console.log(result);
                     if(result.status.code == 202) {
                         $('#respondModal').modal('show');
                         $('#respondAdd').html(result.status.description);
@@ -506,32 +492,44 @@ function changeSearchTerm(){
 
 function search(searchData, searchTermData){
         if(searchTermData == 'person') {
-            var searchPerson = fetchDataGet({search: searchData}, './libs/php/searchPerson.php');
-            var depAjax = fetchDataGet({}, './libs/php/getTotalDepartment.php');
-
-            $.when(searchPerson, depAjax).then(function(searchPers, depRes) {
-                if(searchPers[0].status.code == 200) {
-                    $('#personsCardBox').html('');
-                    $('#personNumber').html(searchPers[0].data.length);
-                    
-                    createPersonCard(searchPers[0].data);
-
-                    for(var i = 0; i < depRes[0].data.length; i++) {
-                        $('.editDepSel').append(`<option value="${depRes[0].data[i].departmentID}">${depRes[0].data[i].departmentName} - ${depRes[0].data[i].location}</option>`)
+            $.ajax({
+                url: './libs/php/searchPerson.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    search: searchData,
+                },
+                success: function(result) {
+                        $.ajax({
+                            url: './libs/php/getTotalDepartment.php',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {},
+                            success: function(result) {
+                                if(result.status.code == 200) {
+                                    for(var i = 0; i < result.data.length; i++) {
+                                        $('.editDepSel').append(`<option value="${result.data[i].departmentID}">${result.data[i].departmentName} - ${result.data[i].location}</option>`)
+                                    }
+                                    $('.editDepSel').each(function(){
+                                        var id = $(this).parent().attr('id');
+                                        $(this).val(id);
+                                    })                                   
+                                }
+                            }
+                        })
+                    if(result.status.code == 200) {
+                        $('#personsCardBox').html('');
+                        $('#personNumber').html(result.data.length);
+                        createPersonCard(result.data);
+                        editChange();
+                        saveChange();
+                        deleteChange();
+                        cancel();
+                    } else {
+                        $('#respondAdd').html('There was something wrong, please try again');
+                        $('#respondModal').modal('show')
                     }
-                    editChange();
-                    saveChange();
-                    deleteChange();
-                    cancel();
-                    $('.editDepSel').each(function(){
-                        var id = $(this).parent().attr('id');
-                        $(this).val(id);
-                    })
-                }else if (searchPers[0].status.code == 400){
-                            $('#respondAdd').html('There was something wrong, please try again');
-                            $('#respondModal').modal('show')
-                        }
-
+                }
             })
         } else if(searchTermData == 'department'){
 
@@ -543,15 +541,6 @@ function search(searchData, searchTermData){
                     search: searchData,
                 },
                 success: function(result) {
-                    if(result.status.code == 200) {
-                        $('#depCardBox').html('');
-                    $('#depNumber').html(result.data.length);
-                        createDepCard(result.data);
-                        editChange();
-                        saveChange();
-                        deleteChange();
-                        cancel();
-
                         $.ajax({
                             url: './libs/php/getTotalLocation.php',
                             type: 'POST',
@@ -569,7 +558,15 @@ function search(searchData, searchTermData){
                                 }
                             }
                         })
-                    } else if (result.status.code == 400){
+                    if(result.status.code == 200) {
+                        $('#depCardBox').html('');
+                    $('#depNumber').html(result.data.length);
+                        createDepCard(result.data);
+                        editChange();
+                        saveChange();
+                        deleteChange();
+                        cancel();
+                    } else {
                         $('#respondAdd').html('There was something wrong, please try again');
                         $('#respondModal').modal('show')
                     }
@@ -592,7 +589,7 @@ function search(searchData, searchTermData){
                         saveChange();
                         deleteChange();
                         cancel();
-                    } else if (result.status.code == 400){
+                    } else {
                         $('#respondAdd').html('There was something wrong, please try again');
                         $('#respondModal').modal('show')
                     }
