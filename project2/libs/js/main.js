@@ -34,14 +34,16 @@ $('document').ready(function() {
     fill();
     changeSearchTerm();
        
-    $('#search').change(function(){
+    $('#search').keyup(function(){
         searchVal = $(this).val();
         search(searchVal, searchTerm);
     });
+    /*
     $('#searchBtn').click(function(){
         searchVal = $('#search').val();
         search(searchVal, searchTerm); 
     })
+    */
     //add data to sql events
     $('#addNewDepBtn').click(function(){
         addNewDepartment();
@@ -123,6 +125,8 @@ function addNewLocation(){
                 name: locName
             },
             success: function(result) {
+                console.log(result);
+
                     $('#addModal').modal('hide');
                     $('#respondModal').modal('show');
                 if (result.status.code == 200) {
@@ -134,10 +138,10 @@ function addNewLocation(){
                     </table> `)
                     fill();
                     ajaxCall();
-                } else if (result.status.code == 400 || result.status.code == 300) {
-                    $('#respondAdd').html(`There was an error, please try again`)
                 } else if(result.status.code == 202) {
                     $('#respondAdd').html(`${locName} is already exists.`)
+                } else {
+                     $('#respondAdd').html(`There was an error, please try again`);
                 }
             }
         });
@@ -393,20 +397,51 @@ function deleteChange(){
         $('.personFull').removeClass('hide');
         $('.personEdit').addClass('hide');
         $('.editBtn').removeClass('hide');
-        $('#deleteModal').modal('show');
+        ;
         $('#deleteYes, #deleteNo').removeClass('hide');
         
         title = $(this).parent().siblings().children('.personFull').children('h5').text();
         currentId = $(this).parent().parent().attr('id');
         if($(this).parent().parent().hasClass('personsCard')){
             deleteInfo = 'person';
+            $('#deleteModal').modal('show');
             $('#deleteText').html(`Are you sure you want to delete ${title}?`);
         } else if ($(this).parent().parent().hasClass('depsCard')) {
-            deleteInfo = 'department'
-            $('#deleteText').html(`Are you sure you want to delete ${title} department?`);
+            deleteInfo = 'department';
+            $.ajax({
+                url: './libs/php/assignDepartment.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {id: currentId},
+                success: function(result) {
+                    console.log(result);
+                    if(result.status.code == 202) {
+                        $('#respondModal').modal('show');
+                        $('#respondAdd').html(result.status.description);
+                    } else if(result.status.code == 200) {
+                        $('#deleteModal').modal('show'); 
+                        $('#deleteText').html(`Are you sure you want to delete ${title} department?`);
+                    }
+                }
+            });
+            
         } else if ($(this).parent().parent().hasClass('locsCard')) {
-            deleteInfo = 'location'
-            $('#deleteText').html(`Are you sure you want to delete ${title} location?`);
+            deleteInfo = 'location';
+            $.ajax({
+                url: './libs/php/assignLocation.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {id: currentId},
+                success: function(result) {
+                    if(result.status.code == 202) {
+                        $('#respondModal').modal('show');
+                        $('#respondAdd').html(result.status.description);
+                    } else if(result.status.code == 200) {
+                        $('#deleteModal').modal('show'); 
+                        $('#deleteText').html(`Are you sure you want to delete ${title} location?`);
+                    }
+                }
+            });
         }
     })
 }
@@ -581,7 +616,7 @@ for(var i =0; i<resultArray.length; i++){
     <div class="card-body text-center">
         <div class="personFull">
             <img src="./libs/img/avatars/${personAvatar[randomNumber]}" alt="avatar" class="avatar">
-            <h5 class="card-title">${resultArray[i].firstName} ${resultArray[i].lastName}</h5>
+            <h5 class="card-title">${resultArray[i].name} ${resultArray[i].lastName}</h5>
             <div class="card-text text-left">
                 <p class="info">Email:</p>
                 <p>${resultArray[i].email}</p>
@@ -594,7 +629,7 @@ for(var i =0; i<resultArray.length; i++){
         <div class="personEdit text-left hide">
             <div class="form-group">
                 <label for="fname" class="editInfo">First Name:</label>
-                <input type="text" class="form-control" value="${resultArray[i].firstName}" required>
+                <input type="text" class="form-control" value="${resultArray[i].name}" required>
             </div>
             <div class="form-group">
                 <label for="lname" class="editInfo">Surname:</label>
@@ -832,10 +867,9 @@ function ajaxCall(){
             }
         }
     });
-
-
-
 }
+
+
 function fill(){
 
     departmentFilter.splice(0, departmentFilter.length);
