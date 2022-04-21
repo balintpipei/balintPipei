@@ -72,6 +72,11 @@
 
 	}
 
+
+	usort($data, function ($item1, $item2) {
+        return $item1['departmentName'] <=> $item2['departmentName'];
+    });
+
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";

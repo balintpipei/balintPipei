@@ -34,6 +34,7 @@
 
 	// SQL does not accept parameters and so is not prepared
 
+
 	$query = 'SELECT d.id as departmentID, d.name as departmentName, l.name as location FROM department d LEFT JOIN location l ON (l.id = d.locationID) ';
 	
 	$query.= ' ORDER BY d.name';
@@ -62,6 +63,10 @@
 		array_push($data, $row);
 
 	}
+
+	usort($data, function ($item1, $item2) {
+        return $item1['departmentName'] <=> $item2['departmentName'];
+    });
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";

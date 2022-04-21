@@ -29,23 +29,15 @@
 
 	}
 
-    $query = 'UPDATE location SET name = "' . $_POST['name'] . '" WHERE id = ' . $_POST["id"];
-	$result = $conn->query($query);
-	
-	if (!$result) {
+	$name = $_POST['name'];
+	$id = $_POST["id"];
 
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
+	$stmt = $conn->prepare('UPDATE location SET name = ? WHERE id = ?');
+	$stmt->bind_param("si", $name, $id);
+	$stmt->execute();
 
-		mysqli_close($conn);
+	$result = $stmt->get_result();
 
-		echo json_encode($output); 
-
-		exit;
-
-	}
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";

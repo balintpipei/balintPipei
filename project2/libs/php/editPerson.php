@@ -29,24 +29,18 @@
 
 	}
 
-	$query = 'UPDATE personnel SET firstName = "' . $_POST['firstName'] . '", lastName = "' . $_POST["lastName"] . '", email = "' . $_POST["email"] . '", departmentID = ' . $_POST["departmentId"] . ' WHERE id = ' . $_POST["id"];
+	$firstName = $_POST['firstName'];
+	$lastName = $_POST['lastName'];
+	$email = $_POST['email'];
+	$departmentId = $_POST['departmentId'];
+	$id = $_POST["id"];
 
-	$result = $conn->query($query);
-	
-	if (!$result) {
+	$stmt = $conn->prepare('UPDATE personnel SET firstName = ? , lastName = ?, email = ?, departmentID = ? WHERE id = ?');
+	$stmt->bind_param("sssii", $firstName, $lastName, $email, $departmentId, $id);
+	$stmt->execute();
 
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
+	$result = $stmt->get_result();
 
-		mysqli_close($conn);
-
-		echo json_encode($output); 
-
-		exit;
-
-	}
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";

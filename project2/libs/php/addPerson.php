@@ -32,10 +32,17 @@
 
 	}	
 //ADDED IN STUFF STARTS HERe
+	$firstName = $_POST['firstName'];
+	$lastName = $_POST['lastName'];
+	$email = $_POST['email'];
+	$department = $_POST['department'];
 
-	$q = 'SELECT * from personnel where firstName= "' . $_POST['firstName'] . '" AND lastName = "' . $_POST['lastName'] . '"';
-	$result = $conn->query($q);
-	$id = $conn->insert_id;
+
+	$stmt = $conn->prepare('SELECT * from personnel where firstName= ? AND lastName = ?');
+	$stmt->bind_param("si", $firstName, $lastName);
+	$stmt->execute();
+
+	$result = $stmt->get_result();
 
 	if(mysqli_num_rows($result) > 0)
 	{
@@ -45,25 +52,12 @@
 		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
 	}
 	else {
-		$query = 'INSERT INTO personnel (firstName, lastName, email, departmentID) VALUES("' . $_POST['firstName'] . '","' . $_POST["lastName"] . '", "' . $_POST["email"] . '", ' . $_POST["department"] . ')';
-		$result = $conn->query($query);
+
+		$statement = $conn->prepare('INSERT INTO personnel (firstName, lastName, email, departmentID) VALUES(?,?,?,?)');
+		$statement->bind_param("sssi", $firstName, $lastName, $email, $department);
+		$statement->execute();
+
 		$id = $conn->insert_id;
-	
-		
-		if (!$result) {
-	
-			$output['status']['code'] = "400";
-			$output['status']['name'] = "executed";
-			$output['status']['description'] = "query failed";	
-			$output['data'] = [];
-	
-			mysqli_close($conn);
-	
-			echo json_encode($output); 
-	
-			exit;
-	
-		}
 	
 		$output['status']['code'] = "200";
 		$output['status']['name'] = "ok";

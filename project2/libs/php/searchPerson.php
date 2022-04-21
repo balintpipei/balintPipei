@@ -36,7 +36,7 @@
 
 	$search = $_POST['search'];
 
-	$query = 'SELECT p.lastName, p.firstName, p.jobTitle, p.email, p.id, d.id as departmentId, d.name as department, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) ';
+	$query = 'SELECT p.lastName, p.firstName as name, p.jobTitle, p.email, p.id, d.id as departmentId, d.name as department, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) ';
 
 	if(strlen($search) > 0) {
 		$query .= ' WHERE p.lastName LIKE "%' . $search . '%" OR p.firstName LIKE "%' . $search . '%" OR p.email LIKE "%' . $search . '%" OR d.name LIKE "%' . $search . '%" OR l.name LIKE "%' . $search . '%" ';
@@ -66,6 +66,10 @@
 		array_push($data, $row);
 
 	}
+	
+	usort($data, function ($item1, $item2) {
+        return $item1['name'] <=> $item2['name'];
+    });
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";

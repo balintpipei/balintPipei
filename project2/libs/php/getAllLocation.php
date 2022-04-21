@@ -27,7 +27,7 @@
 
 		exit;
 
-	}	
+	}
 
 	$filterArray = $_POST['locFilter'];
 
@@ -39,6 +39,7 @@
 
 
 	$result = $conn->query($query);
+
 	
 	if (!$result) {
 
@@ -61,7 +62,7 @@
 
 		array_push($data, $row);
 
-	}
+	};
 
 	usort($data, function ($item1, $item2) {
         return $item1['name'] <=> $item2['name'];

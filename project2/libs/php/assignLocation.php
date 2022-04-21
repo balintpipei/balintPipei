@@ -27,23 +27,31 @@
 
 		exit;
 
-	}	
+	}
+    $id = $_POST['id'];
 
-	$id = $_POST['id'];
-
-	$stmt = $conn->prepare('DELETE FROM location WHERE id = ?');
+	$stmt = $conn->prepare('SELECT * from department where locationID = ?');
 	$stmt->bind_param("i", $id);
 	$stmt->execute();
 
 	$result = $stmt->get_result();
-		
+
+
+	if(mysqli_num_rows($result) > 0)
+	{
+		$output['status']['code'] = "202";
+		$output['status']['name'] = "executed";
+		$output['status']['description'] = "Staff assigned to this department";
+		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+	}
+	else {
 	
-	$output['status']['code'] = "200";
-	$output['status']['name'] = "ok";
-	$output['status']['description'] = "success";
-	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = [];
-	
+		$output['status']['code'] = "200";
+		$output['status']['name'] = "ok";
+		$output['status']['description'] = "success";
+		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+		$output['data'] = [];
+	}
 	
 	mysqli_close($conn);
 

@@ -33,42 +33,21 @@
 	// SQL statement accepts parameters and so is prepared to avoid SQL injection.
 	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
 
-	$q = 'SELECT * from personnel where departmentID = ' . $_POST['id'];
-	$result = $conn->query($q);
+	$id = $_POST['id'];
 
-	if(mysqli_num_rows($result) > 0)
-	{
-		$output['status']['code'] = "202";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "Staff assigned to this department";
-		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	}
-	else {
-		$query = 'DELETE FROM department WHERE id = ' . $_POST['id'];
+	$stmt = $conn->prepare('DELETE FROM department WHERE id = ?');
+	$stmt->bind_param("i", $id);
+	$stmt->execute();
 
-		$result = $conn->query($query);
-		
-		if (!$result) {
-	
-			$output['status']['code'] = "400";
-			$output['status']['name'] = "executed";
-			$output['status']['description'] = "query failed";	
-			$output['data'] = [];
-	
-			mysqli_close($conn);
-	
-			echo json_encode($output); 
-	
-			exit;
-	
-		}
-	
-		$output['status']['code'] = "200";
-		$output['status']['name'] = "ok";
-		$output['status']['description'] = "success";
-		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-		$output['data'] = [];
-	}
+	$result = $stmt->get_result();
+
+			
+	$output['status']['code'] = "200";
+	$output['status']['name'] = "ok";
+	$output['status']['description'] = "success";
+	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+	$output['data'] = [];
+
 
 	
 	mysqli_close($conn);

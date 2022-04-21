@@ -34,11 +34,15 @@
 
 	// SQL statement accepts parameters and so is prepared to avoid SQL injection.
 	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
+	$name = $_POST['name'];
+
+	$stmt = $conn->prepare('SELECT * FROM location WHERE name = ?');
+	$stmt->bind_param("s", $name);
+	$stmt->execute();
+
+	$result = $stmt->get_result();
 
 
-	$q = 'SELECT * FROM location WHERE name= "' . $_POST['name'] . '"';
-	$result = $conn->query($q);
-	$id = $conn->insert_id;
 
 	if(mysqli_num_rows($result) > 0)
 	{
@@ -48,26 +52,14 @@
 		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
 	}
 	else {
-		$query = 'INSERT INTO location (name) VALUES("' . $_POST['name'] . '")';
 
-		$result = $conn->query($query);
-	
+		$statement = $conn->prepare('INSERT INTO location (name) VALUES(?)');
+		$statement->bind_param("s", $name);
+		$statement->execute();
 		
-		if (!$result) {
-	
-			$output['status']['code'] = "400";
-			$output['status']['name'] = "executed";
-			$output['status']['description'] = "query failed";	
-			$output['data'] = [];
-	
-			mysqli_close($conn);
-	
-			echo json_encode($output); 
-	
-			exit;
-	
-		}
-	
+		$id = $conn->insert_id;
+
+
 		$output['status']['code'] = "200";
 		$output['status']['name'] = "ok";
 		$output['status']['description'] = "success";
@@ -75,6 +67,7 @@
 		$output['data'] = [$id];
 	}
 	
+
 	mysqli_close($conn);
 
 	echo json_encode($output); 

@@ -36,9 +36,16 @@
 	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
 
 //ADDED IN department STARTS HERe
+$name = $_POST['name'];
+$locationID = $_POST['locationID'];
 
-$q = 'SELECT * from department where name= "' . $_POST['name'] . '" AND locationID = "' . $_POST['locationID'] . '"';
-$result = $conn->query($q);
+
+$stmt = $conn->prepare('SELECT * from department where name= ? AND locationID = ?');
+$stmt->bind_param("si", $name, $locationID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+
 
 if(mysqli_num_rows($result) > 0)
 {
@@ -47,33 +54,19 @@ if(mysqli_num_rows($result) > 0)
 	$output['status']['description'] = "department exists";
 	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
 }
-else {	
-	$query = 'INSERT INTO department (name, locationID) VALUES("' . $_POST['name'] . '",' . $_POST["locationID"] . ')';
+	else {	
+		$statement = $conn->prepare('INSERT INTO department (name, locationID) VALUES(?,?)');
+		$statement->bind_param("si", $name, $locationID);
+		$statement->execute();
 
-	$result = $conn->query($query);
-	$id = $conn->insert_id;
-	
-	if (!$result) {
+		$id = $conn->insert_id;
 
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
-
-		mysqli_close($conn);
-
-		echo json_encode($output); 
-
-		exit;
-
+		$output['status']['code'] = "200";
+		$output['status']['name'] = "ok";
+		$output['status']['description'] = "success";
+		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+		$output['data'] = [$id];
 	}
-
-	$output['status']['code'] = "200";
-	$output['status']['name'] = "ok";
-	$output['status']['description'] = "success";
-	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = [$id];
-}
 
 
 	mysqli_close($conn);

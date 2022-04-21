@@ -28,24 +28,16 @@
 		exit;
 
 	}
+	$name = $_POST['name'];
+	$locationId = $_POST['locationId'];
+	$id = $_POST["id"];
 
-    $query = 'UPDATE department SET name = "' . $_POST['name'] . '", locationID = ' . $_POST["locationId"] . ' WHERE id = ' . $_POST["id"];
-	$result = $conn->query($query);
-	
-	if (!$result) {
+	$stmt = $conn->prepare('UPDATE department SET name = ? , locationID = ? WHERE id = ?');
+	$stmt->bind_param("sii", $name, $locationId, $id);
+	$stmt->execute();
 
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
+	$result = $stmt->get_result();
 
-		mysqli_close($conn);
-
-		echo json_encode($output); 
-
-		exit;
-
-	}
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";

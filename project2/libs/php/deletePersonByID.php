@@ -34,25 +34,14 @@
 	// SQL statement accepts parameters and so is prepared to avoid SQL injection.
 	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
 
+	$id = $_POST['id'];
 
-    $query = 'DELETE FROM personnel WHERE id = ' . $_POST['id'];
+	$stmt = $conn->prepare('DELETE FROM personnel WHERE id = ?');
+	$stmt->bind_param("i", $id);
+	$stmt->execute();
 
-	$result = $conn->query($query);
+	$result = $stmt->get_result();
 	
-	if (!$result) {
-
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
-
-		mysqli_close($conn);
-
-		echo json_encode($output); 
-
-		exit;
-
-	}
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
