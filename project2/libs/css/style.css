@@ -12,10 +12,6 @@ body{
 #top{
     width: 100%;
     height: auto;
-    background-image: url('../img/back1.jpeg');
-    background-repeat: no-repeat;
-    background-position: bottom right;
-    background-size: cover;
 }
 #topBox{
     width: 85%;
@@ -91,7 +87,7 @@ body{
     color:rgb(98, 98, 98)
 }
 .nav-item:hover{
-    color: green;
+    color: white;
 }
 @media screen and (max-width: 400px) {
     .nav-item h5{
@@ -123,8 +119,8 @@ body{
 
 .personsCard{
     width: 250px;
-    height: 470px;
-    overflow: scroll;
+    max-height: 470px;
+    overflow: hidden;
 }
 .depsCard{
     width: 250px;
