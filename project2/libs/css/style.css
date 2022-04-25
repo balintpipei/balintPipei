@@ -16,7 +16,7 @@ body{
 #topBox{
     width: 85%;
     min-height: 60%;
-    margin: 10vh 0;
+    margin: 10vh auto;
     padding: 20px;
     background: rgba(95, 95, 95, 0.699);
     border-radius: 5px;
@@ -26,6 +26,11 @@ body{
       width: 100%;
     }
   }
+
+.timeBox{
+    margin: 0 20px;
+    color: white;
+}
 #searchIcon{
     position: absolute; 
     margin-left: 5px; 
@@ -124,13 +129,13 @@ body{
 }
 .depsCard{
     width: 250px;
-    height: 350px;
-    overflow: scroll;
+    min-height: 350px;
+    overflow: hidden;
 }
 .locsCard{
     width: 250px;
-    height: 300px;
-    overflow: scroll;
+    min-height: 300px;
+    overflow: hidden;
 }
 .avatar{
     width: 100px;
