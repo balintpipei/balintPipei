@@ -33,6 +33,7 @@ $('document').ready(function() {
     filterModal();
     fill();
     changeSearchTerm();
+    timeSpan();
        
     $('#search').keyup(function(){
         searchVal = $(this).val();
@@ -85,6 +86,7 @@ function addNewDepartment(){
                     </table> `)
                     fill();
                     ajaxCall();
+                    timeSpan();
                 } else if (result.status.code == 400 || result.status.code == 300) {
                     $('#respondAdd').html(`There was an error, please try again`)
                 } else if(result.status.code == 202) {
@@ -112,8 +114,6 @@ function addNewLocation(){
                 name: locName
             },
             success: function(result) {
-                console.log(result);
-
                     $('#addModal').modal('hide');
                     $('#respondModal').modal('show');
                 if (result.status.code == 200) {
@@ -125,6 +125,7 @@ function addNewLocation(){
                     </table> `)
                     fill();
                     ajaxCall();
+                    timeSpan();
                 } else if(result.status.code == 202) {
                     $('#respondAdd').html(`${locName} is already exists.`)
                 } else {
@@ -165,6 +166,7 @@ function addNewPerson(){
                     if (result.status.code == 200) {
                         $('#respondAdd').html(`You have successfully added ${fName} ${lName} to ${depName}`);
                         ajaxCall();
+                        timeSpan();
                     } else if (result.status.code == 400 || result.status.code == 300) {
                         $('#respondAdd').html(`There was an error, please try again.`)
                     } else if(result.status.code == 202) {
@@ -217,6 +219,7 @@ function deleteClear(url){
                         $('#deleteModal').modal('hide');
                         fill();
                         ajaxCall();
+                        timeSpan();
                     } else if(result.status.code == 202){
                         $('#respondModal').modal('show');
                         $('#respondAdd').html(result.status.description);
@@ -264,6 +267,7 @@ function saveChange(){
 
                             $('#respondAdd').html(`Edit was successfull`);
                             ajaxCall();
+                            timeSpan();
                         } else if (result.status.code == 400){
                             $('#respondAdd').html('There was something wrong, please try again');
                         }
@@ -295,6 +299,7 @@ function saveChange(){
                         $('#respondAdd').html(`Edit was successfull`);
                         fill();
                         ajaxCall();
+                        timeSpan();
                     } else if (result.status.code == 400){
                         $('#respondAdd').html('There was something wrong, please try again');
                     }
@@ -320,6 +325,7 @@ function saveChange(){
                         $('#respondAdd').html(`Edit was successfull`);
                         fill();
                         ajaxCall();
+                        timeSpan();
                     } else if (result.status.code == 400){
                         $('#respondAdd').html('There was something wrong, please try again');
                     }
@@ -488,7 +494,18 @@ function changeSearchTerm(){
     })
 };
 
+function timeSpan(){
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1;
+    var yyyy = today.getFullYear();
+    var hours = today.getHours();
+    var mins = today.getMinutes();
+ 
+    var date = `${yyyy}-${mm}-${dd}: ${hours}:${mins}`;
 
+    $('#time').html(date);
+};
 
 function search(searchData, searchTermData){
         if(searchTermData == 'person') {
