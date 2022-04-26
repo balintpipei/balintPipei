@@ -16,7 +16,7 @@ let searchVal;
 
 $(window).on('load', function() {
     if($('#preloader').length) {
-        $('#preloader').delay(3000).fadeOut('slow', function() {
+        $('#preloader').delay(2000).fadeOut('slow', function() {
             $(this).remove();
         });
     }
@@ -27,24 +27,15 @@ $('document').ready(function() {
 
     ajaxCall();
     deleteCurrent();
-    addModalPerson();
-    addModalDep();
-    addModalLoc();
     filterModal();
     fill();
     changeSearchTerm();
-    timeSpan();
+    addNew();
        
     $('#search').keyup(function(){
         searchVal = $(this).val();
         search(searchVal, searchTerm);
     });
-    /*
-    $('#searchBtn').click(function(){
-        searchVal = $('#search').val();
-        search(searchVal, searchTerm); 
-    })
-    */
     //add data to sql events
     $('#addNewDepBtn').click(function(){
         addNewDepartment();
@@ -57,15 +48,17 @@ $('document').ready(function() {
     })
 });
 
+
+
 //add new department
 function addNewDepartment(){
 
     let depName = $('#newDepValue').val().trim();
-    let locationid = $('#newLocSelect').val().trim();
+    let locationid = $('#newLocSelect').val();
     let locationName = $('#newLocSelect').find('option:selected').text();
 
 
-    if(depName.length > 0){
+    if(depName.length > 0 && locationid != 'none'){
         $.ajax({
             url: "libs/php/addDepartment.php",
             type: 'POST',
@@ -86,11 +79,10 @@ function addNewDepartment(){
                     </table> `)
                     fill();
                     ajaxCall();
-                    timeSpan();
                 } else if (result.status.code == 400 || result.status.code == 300) {
                     $('#respondAdd').html(`There was an error, please try again`)
                 } else if(result.status.code == 202) {
-                    $('#respondAdd').html(`${depName} department is already in ${locationName}.`)
+                    $('#respondAdd').html(`${depName} department is already exists.`)
                 }
             }
         });        
@@ -125,7 +117,6 @@ function addNewLocation(){
                     </table> `)
                     fill();
                     ajaxCall();
-                    timeSpan();
                 } else if(result.status.code == 202) {
                     $('#respondAdd').html(`${locName} is already exists.`)
                 } else {
@@ -145,10 +136,11 @@ function addNewPerson(){
     let fName = $('#newFNameValue').val().trim();
     let lName = $('#newLNameValue').val().trim();
     let email = $('#newEmailValue').val().trim();
-    let dep = $('#newDepSelect').val().trim();
+    let jobTitle = $('#newjobTitleValue').val().trim();
+    let dep = $('#newDepSelect').val();
     let depName = $('#newDepSelect').find('option:selected').text()
 
-    if(fName.length > 0 && lName.length > 0) {
+    if(fName.length > 0 && lName.length > 0 && jobTitle.length > 0 && dep != 'none') {
         if(ValidateEmail(email)){
             $.ajax({
                 url: "libs/php/addPerson.php",
@@ -158,6 +150,7 @@ function addNewPerson(){
                     firstName: fName,
                     lastName: lName,
                     email: email,
+                    jobTitle: jobTitle,
                     department: dep,
                 },
                 success: function(result) {
@@ -166,7 +159,6 @@ function addNewPerson(){
                     if (result.status.code == 200) {
                         $('#respondAdd').html(`You have successfully added ${fName} ${lName} to ${depName}`);
                         ajaxCall();
-                        timeSpan();
                     } else if (result.status.code == 400 || result.status.code == 300) {
                         $('#respondAdd').html(`There was an error, please try again.`)
                     } else if(result.status.code == 202) {
@@ -219,7 +211,6 @@ function deleteClear(url){
                         $('#deleteModal').modal('hide');
                         fill();
                         ajaxCall();
-                        timeSpan();
                     } else if(result.status.code == 202){
                         $('#respondModal').modal('show');
                         $('#respondAdd').html(result.status.description);
@@ -244,7 +235,7 @@ function saveChange(){
         let deplocId = $(this).parent().siblings().children('.personEdit').children().children('select').val();
         
         if(deleteInfo == 'person'){
-            if(data[0].length > 0 && data[1].length > 0) {
+            if(data[0].length > 0 && data[1].length > 0 && data[0].length > 0) {
                 if(ValidateEmail(data[2])) {
                 $.ajax({
                     url: './libs/php/editPerson.php',
@@ -254,6 +245,7 @@ function saveChange(){
                         firstName: data[0], 
                         lastName: data[1],
                         email: data[2],
+                        jobTitle: data[3],
                         id: currentId,
                         departmentId: deplocId,
                     },
@@ -267,7 +259,6 @@ function saveChange(){
 
                             $('#respondAdd').html(`Edit was successfull`);
                             ajaxCall();
-                            timeSpan();
                         } else if (result.status.code == 400){
                             $('#respondAdd').html('There was something wrong, please try again');
                         }
@@ -299,7 +290,6 @@ function saveChange(){
                         $('#respondAdd').html(`Edit was successfull`);
                         fill();
                         ajaxCall();
-                        timeSpan();
                     } else if (result.status.code == 400){
                         $('#respondAdd').html('There was something wrong, please try again');
                     }
@@ -325,7 +315,6 @@ function saveChange(){
                         $('#respondAdd').html(`Edit was successfull`);
                         fill();
                         ajaxCall();
-                        timeSpan();
                     } else if (result.status.code == 400){
                         $('#respondAdd').html('There was something wrong, please try again');
                     }
@@ -376,10 +365,58 @@ function editChange(){
         currentId = $(this).parent().parent().attr('id');
         if($(this).parent().parent().hasClass('personsCard')){
             deleteInfo = 'person';
+
+            let fName = $(this).parent().siblings().children('.personEdit').children().children('.fName');
+            let lName = $(this).parent().siblings().children('.personEdit').children().children('.lName');
+            let email = $(this).parent().siblings().children('.personEdit').children().children('.email');
+            let jobTitle = $(this).parent().siblings().children('.personEdit').children().children('.jobTitle');
+            let dep = $(this).parent().siblings().children('.personEdit').children().children('.editDepSel');
+
+            $.ajax({
+                url: './libs/php/getPersonnelByID.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {id: currentId},
+                success: function(result) {
+                    let data = result.data['personnel'][0];
+                    fName.val(data.firstName);
+                    lName.val(data.lastName);
+                    email.val(data.email);
+                    jobTitle.val(data.jobTitle);
+                    dep.val(data.departmentId);
+                }
+            });
         } else if ($(this).parent().parent().hasClass('depsCard')) {
-            deleteInfo = 'department'
+            deleteInfo = 'department';
+            let depName = $(this).parent().siblings().children('.personEdit').children().children('.depName');
+            let loc = $(this).parent().siblings().children('.personEdit').children().children('.editLocSel'); 
+
+            $.ajax({
+                url: './libs/php/getDepartmentByID.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {id: currentId},
+                success: function(result) {
+                    let data = result.data[0];
+                    depName.val(data.name);
+                    loc.val(data.locationID);
+                    
+                }
+            });
+
         } else if ($(this).parent().parent().hasClass('locsCard')) {
-            deleteInfo = 'location'
+            deleteInfo = 'location';
+            let locName =$(this).parent().siblings().children('.personEdit').children().children('.locName');
+            $.ajax({
+                url: './libs/php/getLocationByID.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {id: currentId},
+                success: function(result) {
+                    let data = result.data[0];
+                    locName.val(data.name);
+                }
+            });
         }
     })
 }
@@ -407,10 +444,10 @@ function deleteChange(){
                 dataType: 'json',
                 data: {id: currentId},
                 success: function(result) {
-                    if(result.status.code == 202) {
+                    if(result.data[0].pc > 0) {
                         $('#respondModal').modal('show');
-                        $('#respondAdd').html(result.status.description);
-                    } else if(result.status.code == 200) {
+                        $('#respondAdd').html('Staff assigned to this department');
+                    } else {
                         $('#deleteModal').modal('show'); 
                         $('#deleteText').html(`Are you sure you want to delete ${title} department?`);
                     }
@@ -425,10 +462,10 @@ function deleteChange(){
                 dataType: 'json',
                 data: {id: currentId},
                 success: function(result) {
-                    if(result.status.code == 202) {
+                    if(result.data[0].pc > 0) {
                         $('#respondModal').modal('show');
-                        $('#respondAdd').html(result.status.description);
-                    } else if(result.status.code == 200) {
+                        $('#respondAdd').html('Department assigned to this location');
+                    } else {
                         $('#deleteModal').modal('show'); 
                         $('#deleteText').html(`Are you sure you want to delete ${title} location?`);
                     }
@@ -438,34 +475,31 @@ function deleteChange(){
     })
 }
 
-function addModalPerson(){
-    $('#addPersonBtn').click(function(){
-        $('#addModal').modal('show');
-        $('#addTitle').html('Add New Person');
-        $('#fNameForm, #lNameForm, #emailForm, #depForm, #newDepSelect').removeClass('hide');
-        $('#addNewDepBtn, #addNewLocBtn, #newDepValue, #locForm').addClass('hide');
-        $('#addNewPersonBtn').removeClass('hide');
+function addNew(){
+    $('#addNew').click(function(){
+        if(searchTerm == 'person') {
+            $('#addModal').modal('show');
+            $('#addTitle').html('Add New Person');
+            $('#fNameForm, #lNameForm, #emailForm, #depForm, #newDepSelect, #jobTitleForm').removeClass('hide');
+            $('#addNewDepBtn, #addNewLocBtn, #newDepValue, #locForm').addClass('hide');
+            $('#addNewPersonBtn').removeClass('hide'); 
+        } else if(searchTerm == 'department') {
+            $('#addModal').modal('show');
+            $('#addTitle').html('Add New Department');
+            $('#fNameForm, #lNameForm , #emailForm, #newDepSelect, #newLocValue, #jobTitleForm').addClass('hide');
+            $('#depForm, #newDepValue, #newLocSelect, #locForm').removeClass('hide');
+            $('#addNewPersonBtn, #addNewLocBtn').addClass('hide');
+            $('#addNewDepBtn, #newDepValue').removeClass('hide');  
+        }else if(searchTerm == 'location') {
+            $('#addModal').modal('show');
+            $('#addTitle').html('Add New Location')
+            $('#fNameForm, #lNameForm ,#emailForm, #depForm, #newLocSelect, #jobTitleForm').addClass('hide');
+            $('#addNewDepBtn, #addNewPersonBtn').addClass('hide');
+            $('#addNewLocBtn, #newLocValue, #locForm').removeClass('hide'); 
+        }
     })
-}
-function addModalDep(){
-    $('#addDepBtn').click(function(){
-        $('#addModal').modal('show');
-        $('#addTitle').html('Add New Department');
-        $('#fNameForm, #lNameForm , #emailForm, #newDepSelect, #newLocValue').addClass('hide');
-        $('#depForm, #newDepValue, #newLocSelect, #locForm').removeClass('hide');
-        $('#addNewPersonBtn, #addNewLocBtn').addClass('hide');
-        $('#addNewDepBtn, #newDepValue').removeClass('hide'); 
-    })
-}
-function addModalLoc(){
-    $('#addLocBtn').click(function(){
-        $('#addModal').modal('show');
-        $('#addTitle').html('Add New Location')
-        $('#fNameForm, #lNameForm ,#emailForm, #depForm, #newLocSelect').addClass('hide');
-        $('#addNewDepBtn, #addNewPersonBtn').addClass('hide');
-        $('#addNewLocBtn, #newLocValue, #locForm').removeClass('hide');
-    })
-}
+};
+
 
 function filterModal(){
     $('#filterBtn').click(function(){
@@ -494,18 +528,6 @@ function changeSearchTerm(){
     })
 };
 
-function timeSpan(){
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1;
-    var yyyy = today.getFullYear();
-    var hours = today.getHours();
-    var mins = today.getMinutes();
- 
-    var date = `${yyyy}-${mm}-${dd}: ${hours}:${mins}`;
-
-    $('#time').html(date);
-};
 
 function search(searchData, searchTermData){
         if(searchTermData == 'person') {
@@ -525,7 +547,7 @@ function search(searchData, searchTermData){
                             success: function(result) {
                                 if(result.status.code == 200) {
                                     for(var i = 0; i < result.data.length; i++) {
-                                        $('.editDepSel').append(`<option value="${result.data[i].departmentID}">${result.data[i].departmentName} - ${result.data[i].location}</option>`)
+                                        $('.editDepSel').append(`<option value="${result.data[i].departmentID}">${result.data[i].departmentName}</option>`)
                                     }
                                     $('.editDepSel').each(function(){
                                         var id = $(this).parent().attr('id');
@@ -618,43 +640,37 @@ function search(searchData, searchTermData){
 
 function createPersonCard(resultArray){
 for(var i =0; i<resultArray.length; i++){
-    var randomNumber = Math.floor(Math.random() * personAvatar.length);
-
-
+   
     $('#personsCardBox').append(`<div id="${resultArray[i].id}" class="card text-white bg-dark mb-3 personsCard">
     <div class="card-header">
-        <i class="bi bi-trash deleteBtn"></i>
-        <i class="bi bi-pencil float-right editBtn"></i>
-        <i class="bi bi-check-lg float-right hide saveBtn"></i>
+        <span class="deleteBtn">Delete</span>
+        <span class="float-right editBtn">Edit</span>
+        <span class="float-right hide saveBtn">Save</span>
     </div>
     <div class="card-body text-center">
         <div class="personFull">
-            <img src="./libs/img/avatars/${personAvatar[randomNumber]}" alt="avatar" class="avatar">
             <h5 class="card-title">${resultArray[i].name} ${resultArray[i].lastName}</h5>
             <div class="card-text text-left">
-                <p class="info">Email:</p>
                 <p>${resultArray[i].email}</p>
-                <p class="info">Department:</p>
+                <p>${resultArray[i].jobTitle}</p>
                 <p>${resultArray[i].department}</p>
-                <p class="info">Location:</p>
                 <p>${resultArray[i].location}</p>
             </div>                            
         </div>
         <div class="personEdit text-left hide">
             <div class="form-group">
-                <label for="fname" class="editInfo">First Name:</label>
-                <input type="text" class="form-control" value="${resultArray[i].name}" required>
+                <input type="text" class="form-control fName" value="" placeholder="First Name">
             </div>
             <div class="form-group">
-                <label for="lname" class="editInfo">Surname:</label>
-                <input type="text" class="form-control" value="${resultArray[i].lastName}" required>
+                <input type="text" class="form-control lName" value="" placeholder="Last Name">
             </div>
             <div class="form-group">
-                <label for="email" class="editInfo">Email:</label>
-                <input type="text" class="form-control" value="${resultArray[i].email}" required>
+                <input type="text" class="form-control email" value="" placeholder="Email">
             </div>
-            <div id="${resultArray[i].departmentId}" class="form-group">
-                <label for="department" class="editInfo">Department:</label>
+            <div class="form-group">
+                <input type="text" class="form-control jobTitle" value="" placeholder="Job Title">
+            </div>         
+            <div class="form-group">
                 <select class="browser-default custom-select editDepSel"></select>
             </div>
             <div class="w-100 text-center cancel">
@@ -668,31 +684,25 @@ for(var i =0; i<resultArray.length; i++){
 }
 function createDepCard(resultArray) {
     for(var i =0; i<resultArray.length; i++){
-        var randomNumber = Math.floor(Math.random() * departmentPic.length);      
-
-
+           
         $('#depCardBox').append(`<div id="${resultArray[i].departmentID}" class="card text-white bg-dark mb-3 depsCard">
         <div class="card-header">
-            <i class="bi bi-trash deleteBtn"></i>
-            <i class="bi bi-pencil float-right editBtn"></i>
-            <i class="bi bi-check-lg float-right hide saveBtn"></i>
+            <span class="deleteBtn">Delete</span>
+            <span class="float-right editBtn">Edit</span>
+            <span class="float-right hide saveBtn">Save</span>
         </div>
         <div class="card-body text-center">
             <div class="personFull">
-                <img src="./libs/img/departments/${departmentPic[randomNumber]}" alt="avatar" class="depPic">
                 <h5 class="card-title">${resultArray[i].departmentName}</h5>
                 <div class="text-center locNameBox">
-                    <p class="info">Location:</p>
                     <p class="locName">${resultArray[i].location}</p>
                 </div>                   
             </div>
             <div class="personEdit text-left hide">
                 <div class="form-group">
-                    <label for="department" class="editInfo">Department:</label>
-                    <input type="text" class="form-control" value="${resultArray[i].departmentName}" required>
+                    <input type="text" class="form-control depName" value="" placeholder="Department Name">
                 </div>
-                <div id="${resultArray[i].locationID}" class="form-group locSelBox">
-                    <label for="location" class="editInfo">Location:</label>
+                <div class="form-group locSelBox">
                     <select class="browser-default custom-select editLocSel"></select>
                 </div>
                 <div class="w-100 text-center cancel">
@@ -705,23 +715,19 @@ function createDepCard(resultArray) {
 }
 function createLocCard(resultArray){
     for(var i =0; i<resultArray.length; i++){
-        var randomNumber = Math.floor(Math.random() * locationPic.length);
-
         $('#locCardBox').append(`<div id="${resultArray[i].id}" class="card text-white bg-dark mb-3 locsCard">
         <div class="card-header">
-            <i class="bi bi-trash deleteBtn"></i>
-            <i class="bi bi-pencil float-right editBtn"></i>
-            <i class="bi bi-check-lg float-right hide saveBtn"></i>
+            <span class="deleteBtn">Delete</span>
+            <span class="float-right editBtn">Edit</span>
+            <span class="float-right hide saveBtn">Save</span>
         </div>
         <div class="card-body text-center">
         <div class="personFull">
-                <img src="./libs/img/locations/${locationPic[randomNumber]}" alt="avatar" class="locPic">
                 <h5 class="card-title">${resultArray[i].name}</h5>                     
             </div>
             <div class="personEdit text-left hide">
                 <div class="form-group">
-                    <label for="location" class="editInfo">Location:</label>
-                    <input type="text" class="form-control" value="${resultArray[i].name}" required>
+                    <input type="text" class="form-control locName" value="" placeholder="Location Name">
                 </div>
                 <div class="w-100 text-center cancel">
                     <p>Cancel</p>
@@ -773,13 +779,6 @@ function createFilterBtn(){
     });
 };
 
-/*
-function abc(){
-    for(var i=0; i<alphabet.length; i++){
-            $('#abc').append(`<p>${alphabet[i].toUpperCase()}</p>`)    
-    }
-}
-*/
 
 function ajaxCall(){
 
@@ -787,7 +786,6 @@ function ajaxCall(){
 
     var depFilterChange = '("' + departmentFilter.join('","') + '")';
 
-    $('#personsCardBox, #depCardBox, #locCardBox').html('');
     $('#newLocSelect option, #newDepSelect option, .editLocSel option, .editDepSel option').remove()
 
     $.ajax({
@@ -800,6 +798,7 @@ function ajaxCall(){
         },
         success: function(result) {
             if(result.status.code == 200) {
+                $('#personsCardBox').html('');
                 $('#personNumber').html(result.data.length);
                 createPersonCard(result.data);
                 editChange();
@@ -813,13 +812,10 @@ function ajaxCall(){
                     data: {},
                     success: function(result) {
                         if(result.status.code == 200) {
+                            $('#newDepSelect').append('<option value="none">Choose Department</option>');
                             for(var i = 0; i < result.data.length; i++) {
-                                $('#newDepSelect, .editDepSel').append(`<option value="${result.data[i].departmentID}">${result.data[i].departmentName} - ${result.data[i].location}</option>`)  
-                            }  
-                            $('.editDepSel').each(function(){
-                                var id = $(this).parent().attr('id');
-                                $(this).val(id);
-                            })             
+                                $('#newDepSelect, .editDepSel').append(`<option value="${result.data[i].departmentID}">${result.data[i].departmentName}</option>`)  
+                            }              
                         }
                     }
                 });
@@ -836,6 +832,7 @@ function ajaxCall(){
         },
         success: function(result) {
             if(result.status.code == 200) {
+                $('#depCardBox').html('');
                 $('#depNumber').html(result.data.length);
                 createDepCard(result.data);
                 editChange();
@@ -849,13 +846,10 @@ function ajaxCall(){
                     data: {},
                     success: function(result) {
                         if(result.status.code == 200) {
+                            $('#newLocSelect').append('<option value="none">Choose Location</option>');
                             for(var i = 0; i < result.data.length; i++) {
                                 $('#newLocSelect, .editLocSel').append(`<option value="${result.data[i].id}">${result.data[i].name}</option>`)  
-                            }
-                            $('.editLocSel').each(function(){
-                                var id = $(this).parent().attr('id');
-                                $(this).val(id);
-                            })                
+                            }               
                         }
                     }
                 });
@@ -872,6 +866,7 @@ function ajaxCall(){
         },
         success: function(result) {
             if(result.status.code == 200) {
+                $('#locCardBox').html('');
                 $('#locNumber').html(result.data.length);
                 createLocCard(result.data);
                 editChange();
@@ -899,17 +894,10 @@ function fill(){
         data: {},
         success: function(result) {
             if(result.status.code == 200) {
-                    let depFill = [];
-                for(var i=0; i < result.data.length; i++){
-                    if(depFill.indexOf(result.data[i].departmentName) === -1) {
-                        depFill.push(result.data[i].departmentName);
-                        
-                    }
-                }
-                for(var i=0; i< depFill.length; i++) {
+                for(var i=0; i< result.data.length; i++) {
                     $('#depFilterTag').append(`<table>
                         <tr>
-                            <td class="depTable"><input class="depcheckBox" type="checkbox" value="${depFill[i]}"><span class="filterTitle">${depFill[i]}</span></td>
+                            <td class="depTable"><input class="depcheckBox" type="checkbox" value="${result.data[i].departmentName}"><span class="filterTitle">${result.data[i].departmentName}</span></td>
                         </tr>
                         </table> `)
                 }
@@ -932,9 +920,6 @@ function fill(){
                         }
                     }
                 });               
-
-
-
             }
         }
     });
