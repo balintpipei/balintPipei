@@ -32,7 +32,7 @@
 	// first query - SQL statement accepts parameters and so is prepared to avoid SQL injection.
 	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
 
-	$query = $conn->prepare('SELECT * from personnel WHERE id = ?');
+	$query = $conn->prepare('SELECT p.lastName, p.firstName, p.jobTitle, p.email, p.id, d.id as departmentId, d.name as department FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) WHERE p.id = ?');
 
 	$query->bind_param("i", $_POST['id']);
 
@@ -63,41 +63,11 @@
 
 	}
 
-	// second query - does not accept parameters and so is not prepared
-
-	$query = 'SELECT id, name from department ORDER BY name';
-
-	$result = $conn->query($query);
-	
-	if (!$result) {
-
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
-
-		mysqli_close($conn);
-
-		echo json_encode($output); 
-
-		exit;
-
-	}
-   
-   	$department = [];
-
-	while ($row = mysqli_fetch_assoc($result)) {
-
-		array_push($department, $row);
-
-	}
-
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";
 	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
 	$output['data']['personnel'] = $personnel;
-	$output['data']['department'] = $department;
 	
 	mysqli_close($conn);
 

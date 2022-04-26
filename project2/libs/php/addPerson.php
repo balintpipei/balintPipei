@@ -35,10 +35,11 @@
 	$firstName = $_POST['firstName'];
 	$lastName = $_POST['lastName'];
 	$email = $_POST['email'];
+	$jobTitle = $_POST['jobTitle'];
 	$department = $_POST['department'];
 
 
-	$stmt = $conn->prepare('SELECT * from personnel where firstName= ? AND lastName = ?');
+	$stmt = $conn->prepare('SELECT firstName, lastName from personnel where firstName= ? AND lastName = ?');
 	$stmt->bind_param("si", $firstName, $lastName);
 	$stmt->execute();
 
@@ -53,8 +54,8 @@
 	}
 	else {
 
-		$statement = $conn->prepare('INSERT INTO personnel (firstName, lastName, email, departmentID) VALUES(?,?,?,?)');
-		$statement->bind_param("sssi", $firstName, $lastName, $email, $department);
+		$statement = $conn->prepare('INSERT INTO personnel (firstName, lastName, email, jobTitle, departmentID) VALUES(?,?,?,?,?)');
+		$statement->bind_param("ssssi", $firstName, $lastName, $email, $jobTitle, $department);
 		$statement->execute();
 
 		$id = $conn->insert_id;

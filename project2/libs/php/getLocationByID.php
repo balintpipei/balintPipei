@@ -1,6 +1,6 @@
 <?php
 
-	// remove next two lines for production
+	// remove next two lines for production	
 
 	//ini_set('display_errors', 'On');
 	//error_reporting(E_ALL);
@@ -20,40 +20,56 @@
 		$output['status']['description'] = "database unavailable";
 		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
 		$output['data'] = [];
-
+		
 		mysqli_close($conn);
 
 		echo json_encode($output);
+		
+		exit;
 
+	}	
+
+	// SQL statement accepts parameters and so is prepared to avoid SQL injection.
+	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
+
+	$query = $conn->prepare('SELECT id, name FROM location WHERE id =  ?');
+
+	$query->bind_param("i", $_POST['id']);
+
+	$query->execute();
+	
+	if (false === $query) {
+
+		$output['status']['code'] = "400";
+		$output['status']['name'] = "executed";
+		$output['status']['description'] = "query failed";	
+		$output['data'] = [];
+
+		echo json_encode($output); 
+	
+		mysqli_close($conn);
 		exit;
 
 	}
-   
-    $id = $_POST['id'];
 
-	$stmt = $conn->prepare('SELECT count(id) as pc FROM personnel WHERE departmentID = ?');
-	$stmt->bind_param("i", $id);
-	$stmt->execute();
+	$result = $query->get_result();
 
-	$result = $stmt->get_result();
-
-
-	$data = [];
+   	$data = [];
 
 	while ($row = mysqli_fetch_assoc($result)) {
 
 		array_push($data, $row);
 
-	};
+	}
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";
 	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
 	$output['data'] = $data;
-	
-	mysqli_close($conn);
 
 	echo json_encode($output); 
+
+	mysqli_close($conn);
 
 ?>

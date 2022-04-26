@@ -36,7 +36,7 @@
 	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
 	$name = $_POST['name'];
 
-	$stmt = $conn->prepare('SELECT * FROM location WHERE name = ?');
+	$stmt = $conn->prepare('SELECT name FROM location WHERE name = ?');
 	$stmt->bind_param("s", $name);
 	$stmt->execute();
 

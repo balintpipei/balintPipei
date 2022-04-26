@@ -32,11 +32,12 @@
 	$firstName = $_POST['firstName'];
 	$lastName = $_POST['lastName'];
 	$email = $_POST['email'];
+	$jobTitle = $_POST['jobTitle'];
 	$departmentId = $_POST['departmentId'];
 	$id = $_POST["id"];
 
-	$stmt = $conn->prepare('UPDATE personnel SET firstName = ? , lastName = ?, email = ?, departmentID = ? WHERE id = ?');
-	$stmt->bind_param("sssii", $firstName, $lastName, $email, $departmentId, $id);
+	$stmt = $conn->prepare('UPDATE personnel SET firstName = ? , lastName = ?, email = ?, jobTitle = ?, departmentID = ? WHERE id = ?');
+	$stmt->bind_param("ssssii", $firstName, $lastName, $email, $jobTitle, $departmentId, $id);
 	$stmt->execute();
 
 	$result = $stmt->get_result();

@@ -40,8 +40,8 @@ $name = $_POST['name'];
 $locationID = $_POST['locationID'];
 
 
-$stmt = $conn->prepare('SELECT * from department where name= ? AND locationID = ?');
-$stmt->bind_param("si", $name, $locationID);
+$stmt = $conn->prepare('SELECT name from department where name= ?');
+$stmt->bind_param("s", $name);
 $stmt->execute();
 
 $result = $stmt->get_result();
