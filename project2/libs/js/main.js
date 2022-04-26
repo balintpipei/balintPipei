@@ -643,9 +643,9 @@ for(var i =0; i<resultArray.length; i++){
    
     $('#personsCardBox').append(`<div id="${resultArray[i].id}" class="card text-white bg-dark mb-3 personsCard">
     <div class="card-header">
-        <span class="deleteBtn">Delete</span>
-        <span class="float-right editBtn">Edit</span>
-        <span class="float-right hide saveBtn">Save</span>
+        <button class="btn btn-danger deleteBtn">Delete</button>
+        <button class="btn btn-secondary float-right editBtn">Edit</button>
+        <button class="btn btn-success float-right hide saveBtn">Save</button>
     </div>
     <div class="card-body text-center">
         <div class="personFull">
@@ -674,7 +674,7 @@ for(var i =0; i<resultArray.length; i++){
                 <select class="browser-default custom-select editDepSel"></select>
             </div>
             <div class="w-100 text-center cancel">
-                <p>Cancel</p>
+                <button class="btn btn-secondary">Cancel</button>
             </div>
         </div>
 
@@ -687,9 +687,9 @@ function createDepCard(resultArray) {
            
         $('#depCardBox').append(`<div id="${resultArray[i].departmentID}" class="card text-white bg-dark mb-3 depsCard">
         <div class="card-header">
-            <span class="deleteBtn">Delete</span>
-            <span class="float-right editBtn">Edit</span>
-            <span class="float-right hide saveBtn">Save</span>
+        <button class="btn btn-danger deleteBtn">Delete</button>
+        <button class="btn btn-secondary float-right editBtn">Edit</button>
+        <button class="btn btn-success float-right hide saveBtn">Save</button>
         </div>
         <div class="card-body text-center">
             <div class="personFull">
@@ -706,7 +706,7 @@ function createDepCard(resultArray) {
                     <select class="browser-default custom-select editLocSel"></select>
                 </div>
                 <div class="w-100 text-center cancel">
-                    <p>Cancel</p>
+                    <button class="btn btn-secondary">Cancel</button>
                 </div>                         
             </div>
         </div>
@@ -717,9 +717,9 @@ function createLocCard(resultArray){
     for(var i =0; i<resultArray.length; i++){
         $('#locCardBox').append(`<div id="${resultArray[i].id}" class="card text-white bg-dark mb-3 locsCard">
         <div class="card-header">
-            <span class="deleteBtn">Delete</span>
-            <span class="float-right editBtn">Edit</span>
-            <span class="float-right hide saveBtn">Save</span>
+        <button class="btn btn-danger deleteBtn">Delete</button>
+        <button class="btn btn-secondary float-right editBtn">Edit</button>
+        <button class="btn btn-success float-right hide saveBtn">Save</button>
         </div>
         <div class="card-body text-center">
         <div class="personFull">
@@ -730,7 +730,7 @@ function createLocCard(resultArray){
                     <input type="text" class="form-control locName" value="" placeholder="Location Name">
                 </div>
                 <div class="w-100 text-center cancel">
-                    <p>Cancel</p>
+                    <button class="btn btn-secondary">Cancel</button>
                 </div>                          
             </div>
         </div>
