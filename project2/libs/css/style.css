@@ -14,23 +14,18 @@ body{
     height: auto;
 }
 #topBox{
-    width: 85%;
-    min-height: 60%;
-    margin: 10vh auto;
-    padding: 20px;
-    background: rgba(95, 95, 95, 0.699);
-    border-radius: 5px;
+    width: 100%;
+    min-height: 22vh;
+    margin: 0 auto;
+    padding: 5px;
 }
 @media screen and (max-width: 400px) {
     #topBox{
       width: 100%;
+      min-height: 15vh;
     }
   }
 
-.timeBox{
-    margin: 0 20px;
-    color: white;
-}
 #searchIcon{
     position: absolute; 
     margin-left: 5px; 
@@ -74,7 +69,7 @@ body{
   }
 
 .filters{
-    margin: 3px;
+    margin: 5px;
     font-size: 10px;
 }
 #personsTab{
@@ -99,20 +94,7 @@ body{
       font-size: 12px;
     }
   }
-#abc{
-    position: absolute;
-    top: 65vh;
-    left: 10px;
-}
-#abc p{
-    font-size: 12px;
-    margin:0;
-    color: green;
-    font-weight: bold;
-}
-#abc p:hover{
-    font-size: 16px;
-}
+
 .number{
     margin: 0 5px;
 }
@@ -122,6 +104,17 @@ body{
     background: white;
 }
 
+#personsCardBox, #depCardBox, #locCardBox {
+    height: 56vh;
+    overflow: auto;
+}
+@media screen and (max-width: 400px) {
+    #personsCardBox, #depCardBox, #locCardBox{
+        height: 67vh;
+    }
+  }
+
+
 .personsCard{
     width: 250px;
     max-height: 470px;
@@ -129,29 +122,15 @@ body{
 }
 .depsCard{
     width: 250px;
-    min-height: 350px;
+    min-height: 200px;
     overflow: hidden;
 }
 .locsCard{
     width: 250px;
-    min-height: 300px;
+    min-height: 100px;
     overflow: hidden;
 }
-.avatar{
-    width: 100px;
-    height: 100px;
-}
-.locPic{
-    width:100%;
-    height: 100px;
-}
-.depPic{
-    width: 150px;
-    height: 100px;
-}
-.card-title{
-    margin: 20px 0 20px 0;
-}
+
 .info, .editInfo{
     margin-bottom: 0;
     text-decoration: underline;
@@ -159,10 +138,7 @@ body{
 .info{
       font-size: 20px;  
 }
-.avatarSelect{
-    width: 50%;
-    margin: 10px 0;
-}
+
 #respondModalHeader{
     max-width: 50%;
 }
@@ -209,9 +185,9 @@ body{
 
 #preloader:before{
     content:"";
-    position: fixed;
-    top: calc(50%-30px);
-    left: calc(50%-30px);
+    position: absolute;
+    top: calc(50% - 30px);
+    left: calc(50% - 30px);
     border: 6px solid #f2f2f2;
     border-top: 6px solid #56829e;
     border-radius: 50%;
