@@ -1,8 +1,3 @@
-### Projects jobs for itcareerswitch
-
-- task
-- project1
-- project2
 
 Balint Pipei - balintpipei1120@gmail.com
 
@@ -11,8 +6,8 @@ Balint Pipei - balintpipei1120@gmail.com
 
 Here are some ideas to get you started:
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
+- 🔭 I’m currently working on a landing page with THREE.JS.
+- 🌱 I’m currently learning WEbGL, THREE.JS, STRIPE
 - 👯 I’m looking to collaborate on ...
 - 🤔 I’m looking for help with ...
 - 💬 Ask me about ...
