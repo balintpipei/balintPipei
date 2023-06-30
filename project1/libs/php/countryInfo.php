@@ -5,7 +5,7 @@
 
     $executionStartTime = microtime(true);
 
-    $url='http://api.geonames.org/countryInfoJSON?formatted=true&lang=en&country='. $_REQUEST['countryCode'] . '&username=balint1120&style=full';
+    $url='http://api.geonames.org/countryInfoJSON?formatted=true&lang=en&country='. $_REQUEST['countryCode'] . '&username=<username>&style=full';
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
