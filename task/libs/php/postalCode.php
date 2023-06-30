@@ -5,7 +5,7 @@
 
     $executionStartTime = microtime(true);
 
-    $urlpostalcodes='http://api.geonames.org/postalCodeSearchJSON?formatted=true&postalcode=' . $_REQUEST['postalcode'] . '&maxRows=5&username=balint1120&style=full';
+    $urlpostalcodes='http://api.geonames.org/postalCodeSearchJSON?formatted=true&postalcode=' . $_REQUEST['postalcode'] . '&maxRows=5&username=<username>&style=full';
 
     $chpostalcodes = curl_init();
     curl_setopt($chpostalcodes, CURLOPT_SSL_VERIFYPEER, false);
