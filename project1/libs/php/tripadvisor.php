@@ -5,7 +5,7 @@
 
     $executionStartTime = microtime(true);
 
-    $url='https://www.triposo.com/api/20220104/location.json?countrycode=' . $_REQUEST['countryCode'] . '&count=10&account=DASVHPET&token=3i1w5lv0dwn7ka5rch4oran4glxmpuj1';
+    $url='https://www.triposo.com/api/20220104/location.json?countrycode=' . $_REQUEST['countryCode'] . '&count=10&account=<accountid>';
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
