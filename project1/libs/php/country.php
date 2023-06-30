@@ -16,8 +16,8 @@
 	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 	CURLOPT_CUSTOMREQUEST => "GET",
 	CURLOPT_HTTPHEADER => [
-		"x-rapidapi-host: wft-geo-db.p.rapidapi.com",
-		"x-rapidapi-key: 830a702993msh88c6c27222e4382p12e9b7jsn8e90e8a476d6"
+		"x-rapidapi-host: <host>",
+		"x-rapidapi-key: <key>"
 	],
 ]);
 
